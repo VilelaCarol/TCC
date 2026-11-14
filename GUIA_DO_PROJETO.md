@@ -91,7 +91,8 @@ Fornecem geração de pares reprodutível (seed=42) e funções legadas. Também
 - **`app/run_swaps_lfw.py`** → `get_lfw_identities`, `generate_swap_pairs` (seed), `NUM_SWAPS=3000`, `RANDOM_SEED=42`. Importado por `reverify_lfw_jeito12`, `blindar_refs`.
 - **`app/run_swaps_ytf.py`** → `generate_attack_pairs` (seed), `NUM_ATTACKS=1000`. Importado por `reverify_ytf_jeito12`, `ablation_ytf`, `blindar_refs`.
 
-### 3.4. OBSOLETOS / SUPERADOS (confirmado: nada ativo os importa)
+### 3.4. REMOVIDOS nesta versão limpa (eram obsoletos/superados; nada ativo os importava)
+> Estes arquivos foram **removidos do repositório** para não confundir o leitor (continuam existindo no repositório original `DeepFake-as-a-Spoofing-Attack` e no histórico). Lista do que era e por quê:
 - **`app/realtime_attack_pipeline.py`** — real-time antigo auto-contido (detecção tripla → OOM). Superado por `realtime_live_attack.py`.
 - **`app/realtime_api_server.py`** — servidor WebSocket/MJPEG antigo; tinha a verificação removida e salvava frames (ASR offline). Superado.
 - **`app/local_virtual_cam.py`** — cliente WebSocket + `pyvirtualcam` da arquitetura distribuída (par do `realtime_api_server`). Superado, mas o `pyvirtualcam` pode ser reaproveitado se um dia for feita a **injeção em Zoom/Meet** (câmera virtual).
@@ -156,8 +157,8 @@ Todos em `app/results/`. **Distinção crucial:**
 - `distribuicoes_blindado.png`, `lfw_jeito1_vs_jeito2.png`, `ytf_jeito1_vs_jeito2.png` — figuras.
 - `realtime_live_log.csv` — log por frame da última sessão real-time; `demo_realtime*.mp4` — vídeos.
 
-### Arquivos ANTIGOS (do pipeline original, Jeito 1 / offline — não reportar como atuais)
-`lfw_scores.csv`, `ytf_scores.csv`, `lfw_swap_attack_results.csv`, `ytf_swap_attack_results.csv`, `realtime_asr_offline.csv`, `realtime_asr_summary.txt`, `realtime_attack_log.csv`, `*_conclusion.txt`, `experimental_config.txt`, pastas `pose_analysis/`, `paper_plots/`, `realtime_frames/`.
+### Arquivos ANTIGOS — REMOVIDOS nesta versão limpa
+Os resultados do pipeline original (Jeito 1 / offline) foram **removidos** para não confundir: `lfw_scores.csv`, `ytf_scores.csv`, `lfw_swap_attack_results.csv`, `ytf_swap_attack_results.csv`, `realtime_asr_offline.csv`, `realtime_asr_summary.txt`, `realtime_attack_log.csv`, `*_conclusion.txt`, `experimental_config.txt`, plots antigos e as pastas `pose_analysis/`, `paper_plots/`, `realtime_frames/`. Ainda estão no repositório original e no histórico Git, se precisar.
 
 ### Números-chave finais (ler assim)
 | Cenário | ASR self (não reportar) | **ASR blindado @FAR1%** | ASR blindado @FAR0.1% |
