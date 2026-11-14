@@ -1,0 +1,12 @@
+========================================================================
+CROSS-CHECK FaceNet (VGGFace2 + MTCNN nativo) — ataque transfere p/ outra família?
+========================================================================
+baseline: genuína 0.728 | impostor 0.023 | EER 5.17% | n=6000 (sem detecção: 0)
+ataque blindado: n=3000 | sim média 0.593 | mediana 0.645 (sem detecção: 0)
+  limiar        valor      ASR  TPR genuína
+  EER          0.2803    91.3%        94.8%
+  FAR1%        0.3932    87.9%        93.9%
+  FAR0.1%      0.4622    83.7%        93.1%
+
+Comparar com AdaFace (LFW blindado): FAR1% 91.8% | FAR0.1% 91.3%.
+Pré-processamento DENTRO da especificação do FaceNet (MTCNN 160x160 RGB + prewhiten).

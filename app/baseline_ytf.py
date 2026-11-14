@@ -335,7 +335,7 @@ def main():
         "CONFIGURAÇÃO EXPERIMENTAL — YTF BASELINE",
         "=" * 55,
         f"Target system    : AdaFace CVLFace IR-50",
-        f"Model source     : HuggingFace (minchul/cvlface_adaface_ir50_ms1mv2)",
+        f"Model source     : AdaFace oficial — adaface_ir50_webface4m.ckpt (local)",
         f"Dataset/Protocol : YouTube Faces DB (Vídeo-to-Vídeo)",
         f"Frames amostrados: {FRAMES_TO_SAMPLE} por vídeo",
         f"Thresholds usados: {THRESHOLDS}",

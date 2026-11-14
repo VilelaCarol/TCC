@@ -182,7 +182,8 @@ def run(args):
     mjpeg.start()
 
     os.makedirs(RESULTS_DIR, exist_ok=True)
-    csv_path = os.path.join(RESULTS_DIR, "realtime_live_log.csv")
+    csv_path = args.log if os.path.isabs(args.log) else os.path.join(RESULTS_DIR, args.log)
+    os.makedirs(os.path.dirname(csv_path), exist_ok=True)
     csv_f = open(csv_path, "w", newline="")
     csv_w = csv.writer(csv_f)
     csv_w.writerow(["frame", "mode", "similarity", "match_045", "match_060", "elapsed_s", "fps"])
@@ -315,6 +316,8 @@ def parse_args():
     p.add_argument("--port", type=int, default=8080)
     p.add_argument("--record", type=str, default=None, help="Salva o vídeo com HUD (ex: demo.mp4)")
     p.add_argument("--record-fps", type=float, default=12.0)
+    p.add_argument("--log", type=str, default="realtime_live_log.csv",
+                   help="CSV de log desta sessão (nome relativo a app/results/ ou caminho absoluto); use nomes distintos p/ multi-sessão")
     p.add_argument("--max-frames", type=int, default=None, help="Para após N frames (headless)")
     p.add_argument("--duration", type=float, default=None, help="Para após N segundos (headless)")
     return p.parse_args()

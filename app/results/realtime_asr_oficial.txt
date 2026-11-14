@@ -1,0 +1,21 @@
+==================================================================
+ASR OFICIAL DO TEMPO REAL (reprodutível)
+==================================================================
+log da sessão : app/results/realtime_live_log.csv
+frames de ataque: 357 | similaridade média: 0.691 (min 0.530, max 0.760)
+
+>> Ponto de operação HERDADO do LFW (o correto):
+   FAR1%_LFW    thr=0.1562  ASR= 100.0%
+   FAR0.1%_LFW  thr=0.2289  ASR= 100.0%
+   EER_LFW      thr=0.0982  ASR= 100.0%
+
+>> Só para comparação (NÃO são ponto de operação):
+   0.45 (lit.)   thr=0.4500  ASR= 100.0%
+   0.60 (lit.)   thr=0.6000  ASR=  98.6%
+   0.698 (pessoal, overfit 8 pessoas)  ASR=  44.0%
+
+>> Validade estatística:
+   autocorrelação lag-1 (rho) = 0.866
+   n efetivo ≈ 26 de 357 frames (frames fortemente correlacionados)
+   unidade estatística = SESSÃO. Aqui n_sessões = 1 -> SEM IC por frame.
+   Para IC: repetir várias sessões/atacantes/vítimas; cada sessão = 1 tentativa.

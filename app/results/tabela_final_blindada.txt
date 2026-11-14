@@ -27,14 +27,17 @@ YTF (vídeo)  — baseline jeito2: genuína 0.544 | impostor 0.005 | EER 4.20%
   FAR @ 1%        0.1615       98.1%        87.7%   <= número robusto
   FAR @ 0.1%      0.2173       97.7%        84.3%   <= número robusto
 
-REAL-TIME (ao vivo) — baseline pessoal jeito2: genuína 0.808 | impostor 0.046 | EER 0%
-             — ataque ao vivo: 357 frames, sim média BLINDADA 0.691, 8-11 FPS
-             — dataset pessoal = 8 pessoas, fotos limpas/frontais (separação perfeita
-               -> threshold de operação sobe p/ 0.698; amostra pequena, nImp=277)
-  threshold        valor     ASR BLINDADO
-  0.45 (lit.)     0.4500       97.2%
-  0.60 (lit.)     0.6000       95.8%
-  EER = FAR@1%    0.6980       44.0%   (ataque 0.691 fica na borda do threshold alto)
+REAL-TIME (ao vivo) — sessão oficial: app/results/realtime_live_log.csv (blindada)
+             — 357 frames de ataque, sim média 0.691, 8-11 FPS
+             — gerado por script: app/realtime_asr_oficial.py
+             — LIMIAR HERDADO DO LFW (ponto de operação válido do sistema):
+  FAR@1% (LFW)    0.1562      ASR 100.0%
+  FAR@0.1% (LFW)  0.2289      ASR 100.0%
+             — só p/ comparação (NÃO são ponto de operação): 0.45 -> 100.0% |
+               0.60 -> 98.6% | 0.698 (overfit das 8 pessoas) -> 44.0%
+             — CAVEAT estatístico: 1 sessão; frames autocorrelacionados (rho=0.866,
+               n_eff~26 de 357) -> IC por frame superestima. Unidade = sessão/tentativa;
+               IC real exige várias sessões/atacantes/vítimas.
 
 ================================================================================
 HEADLINE (reportar no texto) — BLINDADO + CALIBRADO POR FAR:
@@ -47,8 +50,10 @@ HEADLINE (reportar no texto) — BLINDADO + CALIBRADO POR FAR:
 LEITURA:
   - Thresholds fixos 0.45/0.60 NÃO são o ponto de operação: em 0.60 o sistema
     rejeitaria 29% (LFW) a 55% (YTF) dos usuários legítimos.
-  - A eficácia num threshold calibrado depende da qualidade do cadastro: cadastro
-    realista (LFW/YTF) -> 85-92%; cadastro pristino minúsculo (pessoal) -> 44%.
+  - O limiar de operação é PROPRIEDADE DO SISTEMA e deve vir da calibração em LFW
+    (milhares de identidades), NÃO do conjunto pessoal de 8 pessoas (separação
+    perfeita -> limiar 0.698 overfit, que não é ponto de operação).
   - Real-time = prova de conceito AO VIVO (ASR medido no loop, respondendo a
-    crítica de que antes era offline); o ASR robusto vem do LFW/YTF.
+    crítica de que antes era offline). No limiar herdado do LFW, ASR = 100% numa
+    sessão; o ASR robusto com IC vem do LFW/YTF (e de múltiplas sessões ao vivo).
 ================================================================================

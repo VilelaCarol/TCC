@@ -1,0 +1,10 @@
+==============================================================================
+CONTROLES DO LADO DO ATAQUE — LFW jeito 2 (limiar de operação FAR@1% = 0.1562)
+==============================================================================
+swaps avaliados: 3000
+(1) deepfake vs ref do SRC (ataque) n=3000 media= 0.516 mediana= 0.558 | >=FAR1%(0.156):  91.8%
+(2) deepfake vs ref do TGT (sobra do alvo) n=3000 media= 0.052 mediana= 0.048 | >=FAR1%(0.156):   6.9%
+(3) deepfake vs ref ALEATÓRIA (impostor) n=3000 media= 0.005 mediana= 0.005 | >=FAR1%(0.156):   1.1%
+
+Interpretação: (1) ALTO e (2)/(3) BAIXOS => o swap transfere a identidade do SRC,
+remove a do alvo e não casa com identidades quaisquer (comporta-se como impostor).

@@ -58,7 +58,7 @@ def _get_verifier():
     """Retorna instância singleton do AdaFaceVerifier."""
     global _verifier_instance
     if _verifier_instance is None:
-        print("   🚀 Inicializando AdaFaceVerifier (CVLFace via HuggingFace)...")
+        print("   🚀 Inicializando AdaFaceVerifier (AdaFace IR-50 WebFace4M, checkpoint local)...")
         # Precisamos estar no diretório da API para que os paths relativos funcionem
         old_cwd = os.getcwd()
         os.chdir(YOLO8FACE_DIR)

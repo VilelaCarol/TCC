@@ -7,6 +7,17 @@ Pipeline completo de **verificação facial** e **avaliação de vulnerabilidade
 - **FaceFusion (inswapper_128)** — geração automatizada de face swaps (deepfakes)
 - **Similaridade Cosseno** — métrica de verificação biométrica
 
+---
+
+> ## ⚠️ Versão atual (atualizada após parecer — nov/2026)
+> Este README descreve a versão **antiga** (Docker, jeito 1, ASR em limiar fixo). A versão atual está documentada em **[`GUIA_DO_PROJETO.md`](GUIA_DO_PROJETO.md)**. Resumo das mudanças:
+> - **Ambiente:** venv `uv` + Python **3.11.16** (sem Docker); torch 2.6.0+cu124, FaceFusion **3.6.1**, onnxruntime-gpu 1.24.4.
+> - **Modelo:** AdaFace IR-50 **WebFace4M**, checkpoint **local** (`data/models/adaface_ir50_webface4m.ckpt`). **Não** é "CVLFace/MS1MV2 via HuggingFace" — essa menção em textos/prints antigos é resíduo e está errada.
+> - **Metodologia:** pré-processamento unificado (alinhamento ArcFace 5 pontos + BGR), referência **blindada** (separada da fonte do swap) e limiar **calibrado por FAR** (ponto de operação), não os fixos 0.45/0.60.
+> - **Números finais (blindado + FAR@1%): LFW 91.8% · YTF 87.7%** de ASR (e 91.3% / 84.3% em FAR@0.1%). Fonte: `app/results/tabela_final_blindada.txt`.
+> - **Tempo real:** prova de conceito ao vivo (ASR no loop), **8–11 FPS** (o "28.6 FPS" abaixo é da versão antiga); ASR = 100% no limiar herdado do LFW em 1 sessão (ver caveat de IC no GUIA).
+> - A seção **"Resultados Principais"** abaixo é **histórica (jeito 1, sem blindagem)** e **não** deve ir na monografia.
+
 ## Objetivo
 
 Avaliar a **robustez do sistema biométrico** (YOLOv8 + AdaFace) contra ataques de **deepfake por face swap**, medindo a taxa com que imagens manipuladas conseguem enganar o classificador facial. Os experimentos são conduzidos em dois cenários:
@@ -101,7 +112,9 @@ Esses arquivos fazem a mesmíssima coisa, só que aplicados nas fotos soltas da 
 
 ---
 
-## Resultados Principais (Validados no Artigo)
+## Resultados Principais — HISTÓRICO (versão antiga, jeito 1, sem blindagem)
+
+> ⚠️ **Números desatualizados.** Esta seção é da versão antiga (limiar fixo, sem referência blindada, modelo descrito incorretamente). Os números finais estão no bloco "Versão atual" acima e em `GUIA_DO_PROJETO.md`. Mantida só como registro histórico.
 
 Os experimentos foram avaliados em 3 regimes distintos de complexidade. O threshold de aceitação adotado como referência de segurança média foi $\tau = 0.45$.
 
@@ -147,7 +160,7 @@ Os experimentos foram avaliados em 3 regimes distintos de complexidade. O thresh
 | Linguagem | Python | 3.13.7 |
 | Deep Learning | PyTorch | 2.6.0+cu124 |
 | Visão Computacional | OpenCV, Ultralytics, ONNXRuntime-GPU | — |
-| Embedding Facial | AdaFace IR-50 (CVLFace) | — |
+| Embedding Facial | AdaFace IR-50 (WebFace4M, checkpoint local) | — |
 | Face Swap | FaceFusion (inswapper_128) | 3.x |
 | Protocolo Tempo-Real | WebSockets (`websockets` + `asyncio`) | — |
 | Injeção / Câmera Virtual | `v4l2loopback` via `pyvirtualcam` | — |
