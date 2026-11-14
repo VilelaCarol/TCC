@@ -1,0 +1,15 @@
+# Configuração da API YOLOv8-Face + AdaFace IR-50 (reconstruída p/ real-time 6GB)
+device: cuda            # 'cuda' (RTX 4050) ou 'cpu'
+
+adaface:
+  architecture: ir_50
+  mode: ir                                           # IR-50 oficial usa 'ir'
+  checkpoint: ../data/models/adaface_ir50_webface4m.ckpt   # relativo a yolo8face_adaface/
+
+yolo:
+  weights: model_weights/yolov8n-face.pt             # relativo a yolo8face_adaface/
+
+face_size: 112
+thresholds:
+  low: 0.45
+  high: 0.60

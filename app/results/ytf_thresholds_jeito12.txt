@@ -1,0 +1,28 @@
+
+======================================================================
+RESUMO YTF (todos os pares; thresholds por EER/FAR/literatura)
+======================================================================
+
+### jeito1 (cru+RGB)
+  genuína média : 0.410
+  impostor média: 0.049
+  ataque média  : 0.479
+  EER           : 9.12%
+  threshold      valor       ASR
+  0.45          0.4500     63.8%
+  0.60          0.6000     21.6%
+  EER           0.1499     96.5%
+  FAR1%         0.2601     91.3%
+  FAR0.1%       0.3712     78.7%
+
+### jeito2 (alinhado+BGR)
+  genuína média : 0.544
+  impostor média: 0.005
+  ataque média  : 0.700
+  EER           : 4.20%
+  threshold      valor       ASR
+  0.45          0.4500     96.6%
+  0.60          0.6000     89.6%
+  EER           0.1144     98.2%
+  FAR1%         0.1615     98.1%
+  FAR0.1%       0.2173     97.7%

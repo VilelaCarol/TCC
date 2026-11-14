@@ -1,0 +1,70 @@
+# ========================
+# Dados pesados (dataset + modelos)
+# ========================
+data/lfw/
+data/models/
+data.zip
+facefusion/
+# ambiente virtual (pesado — não versionar)
+.venv/
+venv/
+# wrapper: manter o CÓDIGO, ignorar só os pesos (baixáveis)
+yolo8face_adaface/model_weights/
+yolo8face_adaface/**/__pycache__/
+
+# ========================
+# Resultados (cada um gera os seus)
+# ========================
+cache/
+
+# ========================
+# Python
+# ========================
+__pycache__/
+*.pyc
+*.pyo
+.Python
+*.egg-info/
+dist/
+build/
+
+# ========================
+# Jupyter
+# ========================
+.ipynb_checkpoints/
+
+# ========================
+# Sistema / IDE
+# ========================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ========================
+# Docker (volumes de dados em runtime)
+# ========================
+*.log
+data/
+facefusion/
+results/
+*.mp4
+*.jpeg
+*.jpg
+.caches/
+
+# ========================
+# Exceções — app/results/ inteiro (subir pro GitHub)
+# ========================
+!app/results/
+!app/results/**
+!app/results/**/*
+!app/results/**/*.jpg
+!app/results/**/*.jpeg
+!app/results/**/*.png
+!app/results/**/*.csv
+!app/results/**/*.txt
+!app/results/**/*.mp4
+

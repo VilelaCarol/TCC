@@ -1,0 +1,29 @@
+services:
+  ia:
+    image: carolinavilela/deepfaketeste:v2.0
+    build: .
+    container_name: ia_gpu
+    network_mode: host
+
+    volumes:
+      - .:/app
+      - ./cache/hf:/root/.cache/huggingface
+      - ./cache/cvlface:/root/.cvlface_cache
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
+
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+
+    tty: true
+    stdin_open: true
+
+    devices:
+      - /dev/video0:/dev/video0

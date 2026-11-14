@@ -1,0 +1,54 @@
+================================================================================
+TABELA FINAL — ASR BLINDADO (referência separada da fonte do swap), JEITO 2
+Victim system: YOLOv8-Face + AdaFace IR-50 | Ataque: FaceFusion inswapper_128
+Métrica: ASR (Attack Success Rate) = % de ataques com similaridade >= threshold
+Blindado = referência de verificação é uma imagem/vídeo DIFERENTE da usada no swap
+Todos os pares entram; thresholds por literatura (0.45/0.60), EER e FAR fixo.
+================================================================================
+
+LFW (foto)   — baseline jeito2: genuína 0.619 | impostor 0.003 | EER 6.50%
+             — ataque médio: self 0.750 -> BLINDADO 0.516
+             — aceitação genuína (TPR) @0.60 = 70.7%  (0.60 rejeita ~29% dos legítimos)
+  threshold        valor     ASR self    ASR BLINDADO
+  0.45 (lit.)     0.4500       94.7%        79.8%
+  0.60 (lit.)     0.6000       93.7%        33.6%
+  EER             0.0982       95.4%        92.6%
+  FAR @ 1%        0.1562       94.9%        91.8%   <= número robusto
+  FAR @ 0.1%      0.2289       94.8%        91.3%   <= número robusto
+
+YTF (vídeo)  — baseline jeito2: genuína 0.544 | impostor 0.005 | EER 4.20%
+             — ataque médio: self 0.700 -> BLINDADO 0.398
+             — aceitação genuína (TPR) @0.60 = 45.5%  (0.60 rejeita ~55% dos legítimos!)
+             — 616 ataques usados (384 pulados: source com 1 só vídeo)
+  threshold        valor     ASR self    ASR BLINDADO
+  0.45 (lit.)     0.4500       96.6%        44.2%
+  0.60 (lit.)     0.6000       89.6%        11.7%
+  EER             0.1144       98.2%        90.4%
+  FAR @ 1%        0.1615       98.1%        87.7%   <= número robusto
+  FAR @ 0.1%      0.2173       97.7%        84.3%   <= número robusto
+
+REAL-TIME (ao vivo) — baseline pessoal jeito2: genuína 0.808 | impostor 0.046 | EER 0%
+             — ataque ao vivo: 357 frames, sim média BLINDADA 0.691, 8-11 FPS
+             — dataset pessoal = 8 pessoas, fotos limpas/frontais (separação perfeita
+               -> threshold de operação sobe p/ 0.698; amostra pequena, nImp=277)
+  threshold        valor     ASR BLINDADO
+  0.45 (lit.)     0.4500       97.2%
+  0.60 (lit.)     0.6000       95.8%
+  EER = FAR@1%    0.6980       44.0%   (ataque 0.691 fica na borda do threshold alto)
+
+================================================================================
+HEADLINE (reportar no texto) — BLINDADO + CALIBRADO POR FAR:
+  LFW : 91.8% (FAR@1%) | 91.3% (FAR@0.1%)
+  YTF : 87.7% (FAR@1%) | 84.3% (FAR@0.1%)
+  -> Ataque devastador (~85-92%) contra cadastro realista/variado, com referência
+     separada e threshold calibrado (sobrevive às críticas de self-match e de
+     threshold arbitrário).
+
+LEITURA:
+  - Thresholds fixos 0.45/0.60 NÃO são o ponto de operação: em 0.60 o sistema
+    rejeitaria 29% (LFW) a 55% (YTF) dos usuários legítimos.
+  - A eficácia num threshold calibrado depende da qualidade do cadastro: cadastro
+    realista (LFW/YTF) -> 85-92%; cadastro pristino minúsculo (pessoal) -> 44%.
+  - Real-time = prova de conceito AO VIVO (ASR medido no loop, respondendo a
+    crítica de que antes era offline); o ASR robusto vem do LFW/YTF.
+================================================================================

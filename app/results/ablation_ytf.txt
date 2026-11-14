@@ -1,0 +1,21 @@
+
+============================================================================================
+TABELA ABLAÇÃO YTF  (N baseline≈1000 pares, N ataque≈300)
+============================================================================================
+condição                    genuína  impostor   ataque    EER%  ASR@.45  ASR@.60
+A  cru+RGB (jeito1)           0.407     0.048    0.492    9.20    67.7%    23.3%
+B  cru+BGR                    0.418     0.036    0.509    8.50    70.0%    28.0%
+C  alinhado+RGB               0.529     0.012    0.686    5.40    98.3%    88.3%
+D  alinhado+BGR (jeito2)      0.545     0.009    0.705    4.90    98.3%    92.0%
+
+--- DECOMPOSIÇÃO (em pontos percentuais de ASR@0.60 e em EER) ---
+ALINHAMENTO (cru->alinhado):
+   sob RGB (A->C): ASR@.60 +65.0 pp | EER -3.80
+   sob BGR (B->D): ASR@.60 +64.0 pp | EER -3.60
+COR (RGB->BGR):
+   no cru     (A->B): ASR@.60 +4.7 pp | EER -0.70
+   no alinhado(C->D): ASR@.60 +3.7 pp | EER -0.50
+
+>>> MENOR EER (config 'correta' pelos pares reais): D  alinhado+BGR (jeito2)  (EER 4.90%)
+>>> Cor com menor EER (no alinhado): BGR
+>>> VEREDITO: a melhor config usa BGR -> o jeito 2 (alinhado+BGR) é consistente.

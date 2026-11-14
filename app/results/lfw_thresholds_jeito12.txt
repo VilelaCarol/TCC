@@ -1,0 +1,28 @@
+
+======================================================================
+RESUMO LFW (todos os pares; thresholds por EER/FAR/literatura)
+======================================================================
+
+### jeito1 (cru+RGB)
+  genuína média : 0.429
+  impostor média: 0.033
+  ataque média  : 0.459
+  EER           : 8.60%
+  threshold      valor       ASR
+  0.45          0.4500     61.5%
+  0.60          0.6000     22.5%
+  EER           0.1291     92.3%
+  FAR1%         0.2072     89.1%
+  FAR0.1%       0.2852     83.6%
+
+### jeito2 (alinhado+BGR)
+  genuína média : 0.619
+  impostor média: 0.003
+  ataque média  : 0.750
+  EER           : 6.50%
+  threshold      valor       ASR
+  0.45          0.4500     94.7%
+  0.60          0.6000     93.7%
+  EER           0.0982     95.4%
+  FAR1%         0.1562     94.9%
+  FAR0.1%       0.2289     94.8%

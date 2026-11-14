@@ -1,0 +1,16 @@
+torch
+torchvision
+torchaudio
+transformers
+numpy<2.0.0
+pandas
+scikit-learn
+ultralytics
+opencv-python-headless<4.10.0
+matplotlib
+scipy<1.14.0
+gdown
+fastapi
+uvicorn
+python-multipart
+tabulate
