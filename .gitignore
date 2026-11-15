@@ -66,5 +66,7 @@ results/
 !app/results/**/*.png
 !app/results/**/*.csv
 !app/results/**/*.txt
-!app/results/**/*.mp4
+# vídeos do real-time NÃO entram no repo (privacidade: mostram pessoas identificáveis)
+app/results/**/*.mp4
+app/results/*.mp4
 

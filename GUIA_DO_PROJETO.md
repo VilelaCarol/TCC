@@ -161,7 +161,7 @@ Todos em `app/results/`. **Distinção crucial:**
 - `ablation_ytf.txt` — tabela 2×2 da ablação.
 - `tabela_final_blindada.txt` — tabela consolidada dos três (self vs. blindado) + leitura.
 - `distribuicoes_blindado.png`, `lfw_jeito1_vs_jeito2.png`, `ytf_jeito1_vs_jeito2.png` — figuras.
-- `realtime_live_log.csv` — log por frame da última sessão real-time; `demo_realtime*.mp4` — vídeos.
+- `realtime_live_log.csv` — log por frame da última sessão real-time. Os vídeos `*.mp4` do real-time **não** vão para o repositório (privacidade: mostram pessoas identificáveis) — ficam só locais.
 - `sessoes_plano.json` — as 15 identidades do LFW sorteadas (semente 42) para o protocolo multi-sessão (registro da amostra).
 - `sessoes/atq_*.csv` (ataque) e `sessoes/imp_*.csv` (controle impostor) — log por frame de cada sessão.
 - `controle_intraclasse.txt` — similaridade genuína A-B de cada vítima + nº de rostos por foto (diagnóstico de validade das sessões).
