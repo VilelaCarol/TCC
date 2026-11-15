@@ -87,7 +87,7 @@ identities = get_ytf_identities(YTF_DATA_DIR)
 n_people = len(identities); n_videos = sum(len(v) for v in identities.values())
 print(f"   pessoas: {n_people} | vídeos: {n_videos}")
 if n_people == 0:
-    print("❌ dataset vazio — verifique a extração do frame_images_DB."); sys.exit(1)
+    print(" dataset vazio — verifique a extração do frame_images_DB."); sys.exit(1)
 
 # ======================================================= 1) BASELINE
 _SMOKE = int(os.environ.get("YTF_SMOKE", "0"))   # >0 limita pares p/ teste rápido
@@ -226,4 +226,4 @@ fig.suptitle("YTF: distribuições antes (jeito 1) vs depois (jeito 2) — mesmo
 fig.tight_layout()
 fig.savefig(os.path.join(RESULTS, "ytf_jeito1_vs_jeito2.png"), dpi=130)
 print(f"   figura salva: {os.path.join(RESULTS, 'ytf_jeito1_vs_jeito2.png')}")
-print("\n✅ YTF concluído.")
+print("\n YTF concluído.")

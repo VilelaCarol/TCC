@@ -58,7 +58,7 @@ def _get_verifier():
     """Retorna instância singleton do AdaFaceVerifier."""
     global _verifier_instance
     if _verifier_instance is None:
-        print("   🚀 Inicializando AdaFaceVerifier (AdaFace IR-50 WebFace4M, checkpoint local)...")
+        print("    Inicializando AdaFaceVerifier (AdaFace IR-50 WebFace4M, checkpoint local)...")
         # Precisamos estar no diretório da API para que os paths relativos funcionem
         old_cwd = os.getcwd()
         os.chdir(YOLO8FACE_DIR)
@@ -66,7 +66,7 @@ def _get_verifier():
             _verifier_instance = AdaFaceVerifier(_CONFIG_PATH)
         finally:
             os.chdir(old_cwd)
-        print(f"   ✅ Modelo carregado no device: {_verifier_instance.device}")
+        print(f"    Modelo carregado no device: {_verifier_instance.device}")
     return _verifier_instance
 
 
@@ -81,7 +81,7 @@ def download_file(url_or_id, dest, is_gdrive=False):
     if is_gdrive:
         # Com a nova API, o modelo é baixado automaticamente do HuggingFace.
         # Mas mantemos a interface caso algum script antigo ainda chame.
-        print(f"   ⚠ Modelo legado (gdown) não é mais necessário. Usando CVLFace/HuggingFace.")
+        print(f"    Modelo legado (gdown) não é mais necessário. Usando CVLFace/HuggingFace.")
         return
     else:
         print(f"   Baixando: {url_or_id}")
@@ -269,7 +269,7 @@ def main():
     total_time = time.time() - t0
     print(f"   Concluído em {total_time:.1f}s")
     if errors:
-        print(f"   ⚠ {errors} pares ignorados (imagens ausentes)")
+        print(f"    {errors} pares ignorados (imagens ausentes)")
 
     # 5. Avaliação completa
     print("\n[5/5] Avaliação e exportação de resultados")

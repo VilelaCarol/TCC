@@ -125,23 +125,23 @@ def run_facefusion_swap(src_path, tgt_path, out_path, cwd="facefusion"):
         result = subprocess.run(cmd, cwd=cwd, check=True, capture_output=True, text=True, timeout=120)
         return True
     except subprocess.CalledProcessError as e:
-        print(f"      ⚠ Erro no FaceFusion: {e.stderr[:200]}")
+        print(f"       Erro no FaceFusion: {e.stderr[:200]}")
         return False
     except subprocess.TimeoutExpired:
-        print(f"      ⚠ Timeout no FaceFusion (>120s)")
+        print(f"       Timeout no FaceFusion (>120s)")
         return False
 
 
 def main():
     print("=" * 90)
-    print("🚀 EXPERIMENTO DE ATAQUE DEEPFAKE NO LFW".center(90))
+    print(" EXPERIMENTO DE ATAQUE DEEPFAKE NO LFW".center(90))
     print("Face Swap + Avaliação Biométrica (AdaFace)".center(90))
     print("=" * 90)
 
     # ──────────────────────────────────────────────────────────────
     # PASSO 0: Garantir que os dados e modelos existem
     # ──────────────────────────────────────────────────────────────
-    print("\n📦 Passo 0/4: Verificando dados e modelos...")
+    print("\n Passo 0/4: Verificando dados e modelos...")
     ensure_lfw_images()
     download_file(PAIRS_URL, PAIRS_FILE)
     download_file(ADAFACE_URL, ADAFACE_CKPT, is_gdrive=True)
@@ -152,7 +152,7 @@ def main():
     # ──────────────────────────────────────────────────────────────
     # PASSO 1: Selecionar identidades e gerar pares para swap
     # ──────────────────────────────────────────────────────────────
-    print(f"\n🔍 Passo 1/4: Selecionando identidades do LFW (mín. {MIN_IMAGES_PER_PERSON} fotos)...")
+    print(f"\n Passo 1/4: Selecionando identidades do LFW (mín. {MIN_IMAGES_PER_PERSON} fotos)...")
     identities = get_lfw_identities(LFW_DIR, MIN_IMAGES_PER_PERSON)
     print(f"   Encontradas {len(identities)} identidades elegíveis.")
     
@@ -168,7 +168,7 @@ def main():
     # ──────────────────────────────────────────────────────────────
     # PASSO 2: Gerar face swaps com FaceFusion
     # ──────────────────────────────────────────────────────────────
-    print(f"\n🎭 Passo 2/4: Gerando {len(swap_pairs)} face swaps com FaceFusion...")
+    print(f"\n Passo 2/4: Gerando {len(swap_pairs)} face swaps com FaceFusion...")
     print("   (Cada swap pode levar alguns segundos)\n")
     
     swap_results = []  # (src_name, src_path, tgt_name, tgt_path, out_path, success)
@@ -184,14 +184,14 @@ def main():
         
         # Se o swap já existe, não refazer
         if os.path.exists(out_path) and os.path.getsize(out_path) > 0:
-            print("✅ (já existe)")
+            print(" (já existe)")
             success = True
         else:
             success = run_facefusion_swap(src_path, tgt_path, out_path)
             if success:
-                print("✅")
+                print("")
             else:
-                print("❌")
+                print("")
         
         swap_results.append((src_name, src_path, tgt_name, tgt_path, out_path, success))
     
@@ -199,12 +199,12 @@ def main():
     n_success = sum(1 for r in swap_results if r[5])
     n_fail = len(swap_results) - n_success
     print(f"\n   Swaps concluídos em {elapsed_swap:.1f}s")
-    print(f"   ✅ Sucesso: {n_success} | ❌ Falha: {n_fail}")
+    print(f"    Sucesso: {n_success} |  Falha: {n_fail}")
 
     # ──────────────────────────────────────────────────────────────
     # PASSO 3: Avaliar os swaps com AdaFace
     # ──────────────────────────────────────────────────────────────
-    print(f"\n🧠 Passo 3/4: Carregando AdaFace + YOLOv8 para avaliação...")
+    print(f"\n Passo 3/4: Carregando AdaFace + YOLOv8 para avaliação...")
     yolo = YOLO(YOLO_FACE_PATH, verbose=False)
     adaface = load_adaface(ADAFACE_CKPT).to(DEVICE)
     
@@ -220,7 +220,7 @@ def main():
         img_src = cv2.imread(src_path)
         
         if img_swap is None or img_src is None:
-            print(f"   [{i+1}] ⚠ Não conseguiu carregar imagens, pulando...")
+            print(f"   [{i+1}]  Não conseguiu carregar imagens, pulando...")
             continue
         
         # Detectar e extrair embeddings
@@ -242,8 +242,8 @@ def main():
         })
         
         # Visual feedback rápido
-        status_045 = "🚨 ENGANOU" if sim >= 0.45 else "🛡️ BARRADO"
-        status_060 = "🚨 ENGANOU" if sim >= 0.60 else "🛡️ BARRADO"
+        status_045 = " ENGANOU" if sim >= 0.45 else " BARRADO"
+        status_060 = " ENGANOU" if sim >= 0.60 else " BARRADO"
         print(f"   [{i+1:3d}] {src_name:25s} → {tgt_name:25s}  "
               f"sim={sim:.4f}  τ0.45:{status_045}  τ0.60:{status_060}")
 
@@ -251,11 +251,11 @@ def main():
     # PASSO 4: Relatório Final
     # ──────────────────────────────────────────────────────────────
     print(f"\n{'='*100}")
-    print(" 📊 RESULTADOS DO ATAQUE DEEPFAKE NO LFW ".center(100, "═"))
+    print("  RESULTADOS DO ATAQUE DEEPFAKE NO LFW ".center(100, "═"))
     print(f"{'='*100}")
     
     if not evaluation_results:
-        print("\n❌ Nenhum swap foi avaliado com sucesso. Verifique se o FaceFusion está funcionando.")
+        print("\n Nenhum swap foi avaliado com sucesso. Verifique se o FaceFusion está funcionando.")
         return
     
     sims = np.array([r["similarity"] for r in evaluation_results])
@@ -270,8 +270,8 @@ def main():
             "Pessoa Alvo": r["source_name"],
             "Corpo Usado": r["target_name"],
             "Similaridade": f"{sim:.4f}",
-            "τ=0.45": "🚨 ENGANOU" if sim >= 0.45 else "🛡️ BARRADO",
-            "τ=0.60": "🚨 ENGANOU" if sim >= 0.60 else "🛡️ BARRADO",
+            "τ=0.45": " ENGANOU" if sim >= 0.45 else " BARRADO",
+            "τ=0.60": " ENGANOU" if sim >= 0.60 else " BARRADO",
         })
     
     df = pd.DataFrame(table_data)
@@ -279,7 +279,7 @@ def main():
     
     # ── Estatísticas de ataque por threshold ─────────────────────
     print(f"\n{'='*80}")
-    print(" 📈 TAXA DE SUCESSO DO ATAQUE (Attack Success Rate) ".center(80, "═"))
+    print("  TAXA DE SUCESSO DO ATAQUE (Attack Success Rate) ".center(80, "═"))
     print(f"{'='*80}")
     
     def wilson_ci(n_success, n_total, z=1.96):
@@ -321,7 +321,7 @@ def main():
             impostor_sc = bl_df[bl_df["label"] == 0]["score"].values
 
             print(f"\n{'='*80}")
-            print(" 🔬 TESTES ESTATÍSTICOS ".center(80, "═"))
+            print("  TESTES ESTATÍSTICOS ".center(80, "═"))
             print(f"{'='*80}")
 
             # KS test: swaps vs genuínos
@@ -362,9 +362,9 @@ def main():
                   f"Média Impostores={np.mean(impostor_sc):.4f}  "
                   f"Média Swaps={np.mean(sims):.4f}")
         else:
-            print("\n   ⚠ lfw_scores.csv não encontrado — testes estatísticos pulados.")
+            print("\n    lfw_scores.csv não encontrado — testes estatísticos pulados.")
     except ImportError:
-        print("\n   ⚠ scipy não instalado — testes estatísticos pulados. Instale com: pip install scipy")
+        print("\n    scipy não instalado — testes estatísticos pulados. Instale com: pip install scipy")
     
     # ── Salvar CSV de resultados ─────────────────────────────────
     csv_path = os.path.join(RESULTS_DIR, "lfw_swap_attack_results.csv")
@@ -383,7 +383,7 @@ def main():
                 int(r["similarity"] >= 0.45),
                 int(r["similarity"] >= 0.60),
             ])
-    print(f"\n   📁 Resultados detalhados salvos em: {csv_path}")
+    print(f"\n    Resultados detalhados salvos em: {csv_path}")
     
     # ── Gráficos ─────────────────────────────────────────────────
     try:
@@ -413,7 +413,7 @@ def main():
         hist_path = os.path.join(RESULTS_DIR, "lfw_swap_attack_histogram.png")
         fig.savefig(hist_path, dpi=150)
         plt.close(fig)
-        print(f"   📊 Histograma de ataque salvo em: {hist_path}")
+        print(f"    Histograma de ataque salvo em: {hist_path}")
         
         # 2. Comparação Baseline vs Ataque (se existir o baseline)
         baseline_csv = os.path.join(RESULTS_DIR, "lfw_scores.csv")
@@ -445,7 +445,7 @@ def main():
             comp_path = os.path.join(RESULTS_DIR, "lfw_baseline_vs_attack.png")
             fig2.savefig(comp_path, dpi=150)
             plt.close(fig2)
-            print(f"   📊 Comparação baseline vs ataque: {comp_path}")
+            print(f"    Comparação baseline vs ataque: {comp_path}")
         
         # 3. Curva ASR vs Threshold (variação contínua)
         tau_range = np.arange(0.05, 0.95, 0.01)
@@ -484,7 +484,7 @@ def main():
         asr_path = os.path.join(RESULTS_DIR, "lfw_asr_vs_threshold.png")
         fig3.savefig(asr_path, dpi=150)
         plt.close(fig3)
-        print(f"   📊 Curva ASR vs Threshold salva em: {asr_path}")
+        print(f"    Curva ASR vs Threshold salva em: {asr_path}")
 
         # 4. Box plot comparativo (Genuínos vs Swaps vs Impostores)
         if os.path.exists(baseline_csv):
@@ -510,10 +510,10 @@ def main():
             box_path = os.path.join(RESULTS_DIR, "lfw_boxplot_comparison.png")
             fig4.savefig(box_path, dpi=150)
             plt.close(fig4)
-            print(f"   📊 Box plot comparativo salvo em: {box_path}")
+            print(f"    Box plot comparativo salvo em: {box_path}")
         
     except Exception as e:
-        print(f"   ⚠ Não foi possível gerar gráficos: {e}")
+        print(f"    Não foi possível gerar gráficos: {e}")
         import traceback
         traceback.print_exc()
 
@@ -566,17 +566,17 @@ INTERPRETAÇÃO:
     conclusion_path = os.path.join(RESULTS_DIR, "lfw_swap_attack_conclusion.txt")
     with open(conclusion_path, "w") as f:
         f.write(conclusion)
-    print(f"   📝 Conclusão salva em: {conclusion_path}")
+    print(f"    Conclusão salva em: {conclusion_path}")
     print(conclusion)
     
     print(f"\n{'='*70}")
     print("Experimento finalizado! Arquivos gerados em app/results/:")
-    print("  📄 lfw_swap_attack_results.csv      - Detalhes de cada swap")
-    print("  📊 lfw_swap_attack_histogram.png     - Distribuição dos scores")
-    print("  📊 lfw_baseline_vs_attack.png        - Baseline vs Ataque")
-    print("  📊 lfw_asr_vs_threshold.png          - Curva ASR vs Threshold")
-    print("  📊 lfw_boxplot_comparison.png        - Box plot comparativo")
-    print("  📝 lfw_swap_attack_conclusion.txt    - Conclusão do experimento")
+    print("   lfw_swap_attack_results.csv      - Detalhes de cada swap")
+    print("   lfw_swap_attack_histogram.png     - Distribuição dos scores")
+    print("   lfw_baseline_vs_attack.png        - Baseline vs Ataque")
+    print("   lfw_asr_vs_threshold.png          - Curva ASR vs Threshold")
+    print("   lfw_boxplot_comparison.png        - Box plot comparativo")
+    print("   lfw_swap_attack_conclusion.txt    - Conclusão do experimento")
     print(f"{'='*70}\n")
 
 

@@ -105,7 +105,7 @@ class MJPEGServer:
 
         self._server = HTTPServer((self.host, self.port), H)
         threading.Thread(target=self._server.serve_forever, daemon=True).start()
-        print(f"📡 MJPEG: http://{self.host}:{self.port}/  (abra no navegador)")
+        print(f" MJPEG: http://{self.host}:{self.port}/  (abra no navegador)")
 
     def stop(self):
         if self._server:
@@ -145,7 +145,7 @@ def draw_hud(frame, sim, match, fps, bbox, mode, asr_low, asr_high, n):
 def run(args):
     source = int(args.source) if str(args.source).isdigit() else args.source
 
-    print("🚀 Carregando AdaFace + YOLO...")
+    print(" Carregando AdaFace + YOLO...")
     verifier = AdaFaceVerifier(CONFIG_PATH)
     print(f"   device: {verifier.device}")
 
@@ -192,7 +192,7 @@ def run(args):
     if args.record:
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
         writer = cv2.VideoWriter(args.record, fourcc, args.record_fps, (args.width, args.height))
-        print(f"🎥 Gravando em: {args.record}")
+        print(f" Gravando em: {args.record}")
 
     mode = args.mode
     headless = not _HAS_DISPLAY
@@ -203,7 +203,7 @@ def run(args):
     last_swap, last_bbox, last_lmk, last_sim, last_match = None, None, None, 0.0, False
     fps_val, fps_c, fps_t = 0.0, 0, time.time()
     t0 = time.time()
-    print(f"🔴 Rodando | modo={mode} | swap a cada {args.swap_every} frame(s)\n")
+    print(f" Rodando | modo={mode} | swap a cada {args.swap_every} frame(s)\n")
 
     try:
         while True:
@@ -269,7 +269,7 @@ def run(args):
                     break
                 elif k == ord('m'):
                     mode = "PASSTHROUGH" if mode == "ATAQUE" else "ATAQUE"
-                    print(f"🔄 modo: {mode}")
+                    print(f" modo: {mode}")
 
             if args.max_frames and n >= args.max_frames:
                 break
@@ -277,7 +277,7 @@ def run(args):
                 break
 
     except KeyboardInterrupt:
-        print("\n⛔ Interrompido.")
+        print("\n Interrompido.")
     finally:
         cap.release()
         if writer is not None:
@@ -288,7 +288,7 @@ def run(args):
             cv2.destroyAllWindows()
         elapsed = time.time() - t0
         print("\n" + "=" * 60)
-        print("📊 RELATÓRIO — ATAQUE AO VIVO")
+        print(" RELATÓRIO — ATAQUE AO VIVO")
         print("=" * 60)
         print(f"   Frames totais     : {n}")
         print(f"   Frames de ataque  : {attack_frames}")

@@ -119,17 +119,17 @@ class NeuralFaceSwapper:
     """Face swap neural usando a API interna do FaceFusion."""
 
     def __init__(self, source_image: np.ndarray, source_bbox: tuple = None):
-        print("🧠 Inicializando motor FaceFusion (inswapper_128)...")
+        print(" Inicializando motor FaceFusion (inswapper_128)...")
         _ensure_models()          # aplica config + carrega modelos (uma vez)
 
         # Face do atacante (fonte do swap)
         faces = get_many_faces([source_image])
         self.source_face = get_one_face(faces)
         if not self.source_face:
-            print("⚠️ Face do atacante não encontrada. Tentando fallback (resize 640)...")
+            print(" Face do atacante não encontrada. Tentando fallback (resize 640)...")
             resized = cv2.resize(source_image, (640, 640))
             self.source_face = get_one_face(get_many_faces([resized]))
-        print(f"   ✅ Atacante processado: {'Sim' if self.source_face else 'Não'}")
+        print(f"    Atacante processado: {'Sim' if self.source_face else 'Não'}")
 
     # ------------------------------------------------------------------ #
     def swap_and_locate(self, frame: np.ndarray):

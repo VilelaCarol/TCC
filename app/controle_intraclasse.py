@@ -68,7 +68,7 @@ def main():
         print(f"ERRO: plano não encontrado: {PLANO} (rode o Passo 0 primeiro)."); sys.exit(1)
     plano = sorted(json.load(open(PLANO)), key=lambda x: x["n"])
 
-    print("🚀 Carregando AdaFace + YOLO (jeito 2)...")
+    print(" Carregando AdaFace + YOLO (jeito 2)...")
     verifier = AdaFaceVerifier(CONFIG)  # align=True por padrão (mesmo das sessões)
     print(f"   device: {verifier.device} | align(jeito 2): {verifier.align}\n")
 
@@ -106,7 +106,7 @@ def main():
         obs = []
         if r["flag"]: obs.append("A-B BAIXO")
         if r["multi"]: obs.append("ref. multi-rosto")
-        obs = ("  ⚠ " + "; ".join(obs)) if obs else ""
+        obs = ("   " + "; ".join(obs)) if obs else ""
         P(f"{r['n']:>3}  {r['id']:<24}{fmt(r['ab']):>8}{fmt(r['atk']):>8}{fmt(r['razao'],2):>7}"
           f"{(str(r['nA'])+'/'+str(r['nB'])):>12}{obs}")
 

@@ -99,10 +99,10 @@ def run_facefusion_swap(src_path, tgt_path, out_path, cwd="facefusion"):
         subprocess.run(cmd, cwd=cwd, check=True, capture_output=True, text=True, timeout=120)
         return True
     except subprocess.CalledProcessError as e:
-        print(f"      ⚠ Erro no FaceFusion: {e.stderr[:200] if e.stderr else 'sem detalhes'}")
+        print(f"       Erro no FaceFusion: {e.stderr[:200] if e.stderr else 'sem detalhes'}")
         return False
     except subprocess.TimeoutExpired:
-        print(f"      ⚠ Timeout no FaceFusion (>120s)")
+        print(f"       Timeout no FaceFusion (>120s)")
         return False
 
 
@@ -147,14 +147,14 @@ def wilson_ci(n_success, n_total, z=1.96):
 # ==============================================================================
 def main():
     print("=" * 90)
-    print("🚀 EXPERIMENTO DE ATAQUE DEEPFAKE NO YOUTUBE FACES DB".center(90))
+    print(" EXPERIMENTO DE ATAQUE DEEPFAKE NO YOUTUBE FACES DB".center(90))
     print("Face Swap (Vídeo) + Avaliação Biométrica (AdaFace)".center(90))
     print("=" * 90)
 
     # ──────────────────────────────────────────────────────────────
     # PASSO 0: Verificar dataset e preparar
     # ──────────────────────────────────────────────────────────────
-    print("\n📦 Passo 0/4: Verificando dataset...")
+    print("\n Passo 0/4: Verificando dataset...")
     identities = get_ytf_identities(YTF_DATA_DIR)
     print(f"   Pessoas: {len(identities)} | Vídeos: {sum(len(v) for v in identities.values())}")
 
@@ -164,7 +164,7 @@ def main():
     # ──────────────────────────────────────────────────────────────
     # PASSO 1: Gerar pares de ataque
     # ──────────────────────────────────────────────────────────────
-    print(f"\n🔍 Passo 1/4: Gerando {NUM_ATTACKS} pares de ataque...")
+    print(f"\n Passo 1/4: Gerando {NUM_ATTACKS} pares de ataque...")
     attack_pairs = generate_attack_pairs(identities, NUM_ATTACKS)
     print(f"   Gerados {len(attack_pairs)} pares de ataque")
     print(f"   Seed: {RANDOM_SEED}")
@@ -176,7 +176,7 @@ def main():
     # ──────────────────────────────────────────────────────────────
     # PASSO 2: Gerar face swaps com FaceFusion
     # ──────────────────────────────────────────────────────────────
-    print(f"\n🎭 Passo 2/4: Gerando face swaps com FaceFusion...")
+    print(f"\n Passo 2/4: Gerando face swaps com FaceFusion...")
     print("   Para cada par, fazemos swap em N frames do vídeo-alvo\n")
 
     verifier = _get_verifier()
@@ -191,7 +191,7 @@ def main():
         tgt_frames = identities.get(tgt_name, {}).get(tgt_vid, [])
 
         if not src_frames or not tgt_frames:
-            print(f"      ⚠ Frames não encontrados, pulando...")
+            print(f"       Frames não encontrados, pulando...")
             continue
 
         # Pega o frame do meio do atacante como referência
@@ -222,21 +222,21 @@ def main():
 
         n_ok = len(swap_paths)
         if n_ok > 0:
-            print(f"      ✅ {n_ok}/{len(sampled_tgt)} frames com swap")
+            print(f"       {n_ok}/{len(sampled_tgt)} frames com swap")
         else:
-            print(f"      ❌ Nenhum swap gerado")
+            print(f"       Nenhum swap gerado")
 
         attack_results.append((src_name, src_vid, tgt_name, tgt_vid, swap_paths, src_frames))
 
     elapsed_swap = time.time() - t0
     n_with_swaps = sum(1 for r in attack_results if len(r[4]) > 0)
     print(f"\n   Swaps concluídos em {elapsed_swap:.1f}s")
-    print(f"   ✅ Ataques com swap: {n_with_swaps}/{len(attack_results)}")
+    print(f"    Ataques com swap: {n_with_swaps}/{len(attack_results)}")
 
     # ──────────────────────────────────────────────────────────────
     # PASSO 3: Avaliar os swaps com AdaFace
     # ──────────────────────────────────────────────────────────────
-    print(f"\n🧠 Passo 3/4: Avaliando swaps com AdaFace...")
+    print(f"\n Passo 3/4: Avaliando swaps com AdaFace...")
     print("   Comparando cada vídeo deepfake com o vídeo original do atacante...\n")
 
     evaluation_results = []
@@ -264,8 +264,8 @@ def main():
             "n_swap_frames": len(swap_paths),
         })
 
-        status_045 = "🚨 ENGANOU" if sim >= 0.45 else "🛡️ BARRADO"
-        status_060 = "🚨 ENGANOU" if sim >= 0.60 else "🛡️ BARRADO"
+        status_045 = " ENGANOU" if sim >= 0.45 else " BARRADO"
+        status_060 = " ENGANOU" if sim >= 0.60 else " BARRADO"
         print(f"   [{i+1:3d}] {src_name:25s} → {tgt_name:25s}  "
               f"sim={sim:.4f}  τ0.45:{status_045}  τ0.60:{status_060}")
 
@@ -273,11 +273,11 @@ def main():
     # PASSO 4: Relatório Final
     # ──────────────────────────────────────────────────────────────
     print(f"\n{'='*100}")
-    print(" 📊 RESULTADOS DO ATAQUE DEEPFAKE NO YOUTUBE FACES DB ".center(100, "═"))
+    print("  RESULTADOS DO ATAQUE DEEPFAKE NO YOUTUBE FACES DB ".center(100, "═"))
     print(f"{'='*100}")
 
     if not evaluation_results:
-        print("\n❌ Nenhum swap foi avaliado. Verifique se o FaceFusion está funcionando.")
+        print("\n Nenhum swap foi avaliado. Verifique se o FaceFusion está funcionando.")
         return
 
     sims = np.array([r["similarity"] for r in evaluation_results])
@@ -285,7 +285,7 @@ def main():
 
     # ── Taxa de sucesso do ataque ────────────────────────────────
     print(f"\n{'='*80}")
-    print(" 📈 TAXA DE SUCESSO DO ATAQUE (Attack Success Rate) ".center(80, "═"))
+    print("  TAXA DE SUCESSO DO ATAQUE (Attack Success Rate) ".center(80, "═"))
     print(f"{'='*80}")
 
     for tau in THRESHOLDS:
@@ -317,7 +317,7 @@ def main():
             impostor_sc = bl_df[bl_df["label"] == 0]["score"].values
 
             print(f"\n{'='*80}")
-            print(" 🔬 TESTES ESTATÍSTICOS ".center(80, "═"))
+            print("  TESTES ESTATÍSTICOS ".center(80, "═"))
             print(f"{'='*80}")
 
             ks_stat_g, ks_p_g = sp_stats.ks_2samp(sims, genuine_sc)
@@ -348,9 +348,9 @@ def main():
                   f"Média Impostores={np.mean(impostor_sc):.4f}  "
                   f"Média Swaps={np.mean(sims):.4f}")
         else:
-            print(f"\n   ⚠ ytf_scores.csv não encontrado — rode baseline_ytf.py primeiro para comparação estatística.")
+            print(f"\n    ytf_scores.csv não encontrado — rode baseline_ytf.py primeiro para comparação estatística.")
     except ImportError:
-        print(f"\n   ⚠ scipy não instalado — testes estatísticos pulados.")
+        print(f"\n    scipy não instalado — testes estatísticos pulados.")
 
     # ── Salvar CSV ───────────────────────────────────────────────
     csv_path = os.path.join(RESULTS_DIR, "ytf_swap_attack_results.csv")
@@ -370,7 +370,7 @@ def main():
                 int(r["similarity"] >= 0.45),
                 int(r["similarity"] >= 0.60),
             ])
-    print(f"\n   📁 Resultados salvos em: {csv_path}")
+    print(f"\n    Resultados salvos em: {csv_path}")
 
     # ── Gráficos ─────────────────────────────────────────────────
     try:
@@ -397,7 +397,7 @@ def main():
         hist_path = os.path.join(RESULTS_DIR, "ytf_swap_attack_histogram.png")
         fig.savefig(hist_path, dpi=150)
         plt.close(fig)
-        print(f"   📊 Histograma salvo em: {hist_path}")
+        print(f"    Histograma salvo em: {hist_path}")
 
         # 2. Comparação Baseline vs Ataque
         baseline_csv = os.path.join(RESULTS_DIR, "ytf_scores.csv")
@@ -426,7 +426,7 @@ def main():
             comp_path = os.path.join(RESULTS_DIR, "ytf_baseline_vs_attack.png")
             fig2.savefig(comp_path, dpi=150)
             plt.close(fig2)
-            print(f"   📊 Comparação baseline vs ataque: {comp_path}")
+            print(f"    Comparação baseline vs ataque: {comp_path}")
 
             # 3. Box plot comparativo
             fig4, ax4 = plt.subplots(figsize=(8, 6))
@@ -451,7 +451,7 @@ def main():
             box_path = os.path.join(RESULTS_DIR, "ytf_boxplot_comparison.png")
             fig4.savefig(box_path, dpi=150)
             plt.close(fig4)
-            print(f"   📊 Box plot salvo em: {box_path}")
+            print(f"    Box plot salvo em: {box_path}")
 
         # 4. Curva ASR vs Threshold
         tau_range = np.arange(0.05, 0.95, 0.01)
@@ -482,10 +482,10 @@ def main():
         asr_path = os.path.join(RESULTS_DIR, "ytf_asr_vs_threshold.png")
         fig3.savefig(asr_path, dpi=150)
         plt.close(fig3)
-        print(f"   📊 Curva ASR salva em: {asr_path}")
+        print(f"    Curva ASR salva em: {asr_path}")
 
     except Exception as e:
-        print(f"   ⚠ Erro gerando gráficos: {e}")
+        print(f"    Erro gerando gráficos: {e}")
         import traceback
         traceback.print_exc()
 
@@ -532,17 +532,17 @@ INTERPRETAÇÃO:
     conclusion_path = os.path.join(RESULTS_DIR, "ytf_swap_attack_conclusion.txt")
     with open(conclusion_path, "w") as f:
         f.write(conclusion)
-    print(f"   📝 Conclusão salva em: {conclusion_path}")
+    print(f"    Conclusão salva em: {conclusion_path}")
     print(conclusion)
 
     print(f"\n{'='*70}")
     print("Experimento finalizado! Arquivos gerados em app/results/:")
-    print("  📄 ytf_swap_attack_results.csv      - Detalhes de cada ataque")
-    print("  📊 ytf_swap_attack_histogram.png     - Distribuição dos scores")
-    print("  📊 ytf_baseline_vs_attack.png        - Baseline vs Ataque")
-    print("  📊 ytf_boxplot_comparison.png        - Box plot comparativo")
-    print("  📊 ytf_asr_vs_threshold.png          - Curva ASR vs Threshold")
-    print("  📝 ytf_swap_attack_conclusion.txt    - Conclusão do experimento")
+    print("   ytf_swap_attack_results.csv      - Detalhes de cada ataque")
+    print("   ytf_swap_attack_histogram.png     - Distribuição dos scores")
+    print("   ytf_baseline_vs_attack.png        - Baseline vs Ataque")
+    print("   ytf_boxplot_comparison.png        - Box plot comparativo")
+    print("   ytf_asr_vs_threshold.png          - Curva ASR vs Threshold")
+    print("   ytf_swap_attack_conclusion.txt    - Conclusão do experimento")
     print(f"{'='*70}\n")
 
 

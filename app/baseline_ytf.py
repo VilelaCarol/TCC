@@ -70,7 +70,7 @@ def get_ytf_identities(ytf_dir):
     """
     identities = {}
     if not os.path.isdir(ytf_dir):
-        print(f"❌ Diretório não encontrado: {ytf_dir}")
+        print(f" Diretório não encontrado: {ytf_dir}")
         return identities
 
     for person_name in sorted(os.listdir(ytf_dir)):
@@ -190,7 +190,7 @@ def main():
     print(f"   Pessoas com 2+ vídeos: {n_multi}")
 
     if n_people == 0:
-        print("❌ Dataset vazio! Verifique o caminho.")
+        print(" Dataset vazio! Verifique o caminho.")
         return
 
     # 2. Gerar pares
@@ -234,7 +234,7 @@ def main():
     total_time = time.time() - t0
     print(f"   Concluído em {total_time:.1f}s")
     if errors:
-        print(f"   ⚠ {errors} pares ignorados")
+        print(f"    {errors} pares ignorados")
 
     # 5. Avaliação
     print(f"\n[5/5] Avaliação e exportação de resultados")
