@@ -60,7 +60,7 @@ N_BASE_EACH=500 N_ATTACK=300 .venv/bin/python app/ablation_ytf.py
 - **`app/`** — scripts do pipeline (ativos + dependências de geração de pares). Mapa completo e papel de cada um no **GUIA §3**.
 - **`yolo8face_adaface/`** — wrapper do verificador (`AdaFaceVerifier`: detecção, alinhamento, embedding, verificação).
 - **`app/results/`** — resultados finais (scores `*_jeito12`, blindado, ablação, FaceNet, figuras, log do tempo real).
-- **`app/utils/`** — utilitários auxiliares legados (dataset pessoal, visualização de landmarks, testes).
+- **`app/utils/`** — utilitários avulsos mantidos: `download_lfw.py` (obtenção do LFW) e `visualize_alignment.py` (figura dos 5 landmarks).
 - **`GUIA_DO_PROJETO.md`** — documentação detalhada e autoritativa.
 
 ## Referências

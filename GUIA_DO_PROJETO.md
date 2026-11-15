@@ -108,6 +108,8 @@ Fornecem geração de pares reprodutível (seed=42) e funções legadas. Também
 - **`app/generate_paper_tables.py`** — gera tabelas do paper a partir dos resultados **antigos** (Jeito 1); superado pelos outputs `*_jeito12` / blindado.
 - **`app/test_video_similarity.py`** — teste ad-hoc antigo; não importado.
 
+**Limpeza adicional (após `292ed0c`, análise de dependências):** removidos também os restos do pipeline Docker/notebook, sem referência ativa — `pipeline_lfw_adaface.ipynb`, `pipeline_deepfake.ipynb`, `update_notebooks.py`, `test_ff.py`, `Dockerfile`, `docker-compose.gpu.yml`, `docker-compose.cpu.yml`, `passo_a_passo_projeto.txt` (continha os números ANTIGOS 92.8%/34.3%, substituídos pelos blindados/calibrados) e 7 scripts órfãos de `app/utils/` (`benchmark_fps`, `compare_faces`, `generate_paper_plots`, `swap_faces`, `run_experiment`, `run_swaps_experiment`, `test_gpu`). Em `app/utils/` ficaram só `download_lfw.py` (obtenção do LFW) e `visualize_alignment.py` (figura dos 5 landmarks). O `requirements.txt` foi curado para os imports reais (saíram `transformers`, `fastapi`, `uvicorn`, `gdown`; `numpy<2.0` corrigido p/ 2.2.1).
+
 ---
 
 ## 4. Como rodar (comandos exatos)

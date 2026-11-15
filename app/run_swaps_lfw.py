@@ -1,8 +1,7 @@
 """
 Experimento de Ataque com Deepfake no LFW (Labeled Faces in the Wild).
 
-Mesmo raciocínio do run_swaps_experiment.py (dataset pessoal), agora aplicado
-ao dataset acadêmico LFW:
+Geração de pares de ataque (deepfake) no dataset acadêmico LFW:
 
   1. Seleciona pares de identidades diferentes do LFW
   2. Usa FaceFusion (inswapper_128) para trocar o rosto da Pessoa A na foto da Pessoa B

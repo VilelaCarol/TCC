@@ -1,16 +1,26 @@
-torch
-torchvision
-torchaudio
-transformers
-numpy<2.0.0
-pandas
-scikit-learn
-ultralytics
-opencv-python-headless<4.10.0
-matplotlib
-scipy<1.14.0
-gdown
-fastapi
-uvicorn
-python-multipart
-tabulate
+# Dependências do verificador (YOLOv8-Face + AdaFace) e dos experimentos.
+# Curado a partir dos imports reais do código e das versões instaladas na .venv.
+# Ambiente: Python 3.11, venv criada com uv, GPU CUDA 12.4.
+#
+# 1) torch/torchvision são os wheels CUDA 12.4 — instale pelo índice do PyTorch:
+#      pip install torch==2.6.0+cu124 torchvision==0.21.0+cu124 \
+#        --index-url https://download.pytorch.org/whl/cu124
+# 2) facenet-pytorch (2º verificador) foi instalado com --no-deps p/ não rebaixar o torch:
+#      pip install --no-deps facenet-pytorch==2.6.0
+# 3) O FaceFusion NÃO é pip: é clonado à parte na tag 3.6.1 em ./facefusion
+#    (ver GUIA_DO_PROJETO.md §2.1). onnxruntime-gpu abaixo é usado tanto pelo
+#    swap quanto pelo preload das libs CUDA.
+
+torch==2.6.0+cu124
+torchvision==0.21.0+cu124
+numpy==2.2.1
+opencv-python==4.13.0.92
+scikit-learn==1.9.1
+scipy==1.17.1
+matplotlib==3.11.2
+pandas==2.3.3
+tabulate==0.10.0
+PyYAML==6.0.3
+ultralytics==8.4.201
+onnxruntime-gpu==1.24.4
+facenet-pytorch==2.6.0
