@@ -1,0 +1,35 @@
+==============================================================================
+CONTROLES NEGATIVOS DO REAL-TIME (PASSTHROUGH: rosto real, sem deepfake)
+==============================================================================
+limiares de operação (LFW jeito 2): FAR1% = 0.1562 | FAR0.1% = 0.2289
+regra: sessão aceita se MEDIANA das similaridades >= limiar
+logs de controle (imp_*/gen_*): 15 em app/results/sessoes/
+
+sessão                         frames    média  mediana      máx  aceita@1%  aceita@0.1%
+imp_01_Queen_Latifah.csv          456   -0.014   -0.011    0.027        não          não
+imp_02_Carlos_Moya.csv            456   -0.104   -0.104   -0.063        não          não
+imp_03_Alexandra_Vodjanikova.csv    457   -0.041   -0.042    0.039        não          não
+imp_04_Steven_Seagal.csv          456   -0.052   -0.053   -0.022        não          não
+imp_05_Greg_Rusedski.csv          439    0.059    0.062    0.101        não          não
+imp_06_GL_Peiris.csv              456   -0.020   -0.026    0.091        não          não
+imp_07_Ethan_Hawke.csv            454   -0.035   -0.035   -0.000        não          não
+imp_08_Christine_Gregoire.csv     455    0.002    0.002    0.048        não          não
+imp_09_Stephen_Friedman.csv       454    0.037    0.037    0.074        não          não
+imp_10_Bruce_Weber.csv            454    0.027    0.029    0.094        não          não
+imp_11_Robert_Horan.csv           455    0.028    0.031    0.082        não          não
+imp_12_Steve_Waugh.csv            456   -0.024   -0.028    0.043        não          não
+imp_13_Michelle_Kwan.csv          455    0.069    0.062    0.215        não          não
+imp_14_Bob_Beauprez.csv           456   -0.051   -0.051    0.007        não          não
+imp_15_Oleksandr_Moroz.csv        456    0.022    0.022    0.114        não          não
+
+==============================================================================
+AGREGADO (unidade = sessão)
+==============================================================================
+sessões de controle: 15 | frames PASSTHROUGH somados: 6815
+similaridade (frames): média -0.007 | mediana -0.008 | máx 0.215
+aceitas @FAR1%  (0.1562): 0/15 = 0.0%  (IC95% Wilson: -0.0-20.4)
+aceitas @FAR0.1% (0.2289): 0/15 = 0.0%  (IC95% Wilson: -0.0-20.4)
+
+Leitura: controle bom = ~0% aceitas (o verificador REJEITA o rosto real do
+atacante). Se muitas sessões de controle forem aceitas, o ASR do ataque perde
+significado (verificador frouxo). Compare com o ASR do ataque (agg_sessoes_realtime.py).

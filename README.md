@@ -2,7 +2,7 @@
 
 Red teaming de um sistema de **verificação facial** contra ataques de **deepfake por face swap injetado na câmera**, em três cenários — foto (LFW), vídeo (YTF) e tempo real (webcam) — unificados na mesma régua metodológica: alinhamento ArcFace de 5 pontos, **referência blindada** (separada da fonte do swap) e **limiar calibrado por FAR** (ponto de operação do sistema).
 
-> 📘 **Documentação completa** (mapa de arquivos, decisões, como rodar cada parte, resultados e limitações): **[`GUIA_DO_PROJETO.md`](GUIA_DO_PROJETO.md)**
+> **Documentação completa** (mapa de arquivos, decisões, como rodar cada parte, resultados e limitações): **[`GUIA_DO_PROJETO.md`](GUIA_DO_PROJETO.md)**
 
 ## Sistema avaliado
 
@@ -23,7 +23,7 @@ Red teaming de um sistema de **verificação facial** contra ataques de **deepfa
 | **LFW** (foto) | AdaFace | **91.8%** | 91.3% | 3000 ataques |
 | **YTF** (vídeo) | AdaFace | **87.7%** | 84.3% | 616 ataques (ver descartes no GUIA) |
 | **LFW** (cross-check) | **FaceNet** (VGGFace2) | **87.9%** | 83.7% | ataque transfere p/ outra família |
-| **Tempo real** (webcam) | AdaFace | **100%** | 100% | 1 sessão, limiar herdado do LFW (prova de conceito) |
+| **Tempo real** (webcam) | AdaFace | **100%** | 100% | 15 sessões (unidade = sessão); 14 válidas, 1 excluída; controle impostor 0/15 |
 
 Leitura detalhada e tabela self × blindado: `app/results/tabela_final_blindada.txt` e GUIA §5. Limiares fixos 0.45/0.60 **não** são o ponto de operação (rejeitariam 29–55% dos usuários legítimos); por isso o número reportado é calibrado por FAR.
 
@@ -47,6 +47,12 @@ N_BASE_EACH=500 N_ATTACK=300 .venv/bin/python app/ablation_ytf.py
   --duration 60 --record app/results/demo.mp4
 # ASR oficial do tempo real (reprodutível, limiar herdado do LFW)
 .venv/bin/python app/realtime_asr_oficial.py
+# Protocolo multi-sessão (15 identidades LFW, semente 42) + controles — ver GUIA §8.6
+.venv/bin/python app/rodar_sessoes.py --modo ATAQUE      --prefixo atq --duration 30
+.venv/bin/python app/rodar_sessoes.py --modo PASSTHROUGH --prefixo imp --duration 30
+.venv/bin/python app/agg_sessoes_realtime.py "app/results/sessoes/atq_*.csv"  # ASR/sessão + IC Wilson
+.venv/bin/python app/analise_controles_realtime.py                            # controle impostor (0/15)
+.venv/bin/python app/controle_intraclasse.py                                  # validade (A-B genuína)
 ```
 
 ## Estrutura

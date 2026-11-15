@@ -1,6 +1,6 @@
 # Guia do Projeto — Red-team de Verificação Facial contra Deepfake
 
-> Documento de referência para retomar o projeto. **Verificado contra o estado real do repositório em 14/11/2026** (imports conferidos por `grep`, versões lidas do `.venv`, números lidos dos arquivos em `app/results/`). Onde algo é incerto, está marcado como **(incerto)**.
+> Documento de referência para retomar o projeto. **Verificado contra o estado real do repositório em 15/11/2026** (imports conferidos por `grep`, versões lidas do `.venv`, números lidos dos arquivos em `app/results/`). Onde algo é incerto, está marcado como **(incerto)**.
 
 ---
 
@@ -83,6 +83,10 @@ Dúvida legítima: "deu tudo certo, não é bug?" Controle em imagens estáticas
 - **`app/blindar_refs.py`** — re-verifica LFW e YTF com referência **separada** (blindada).
 - **`app/figura_distribuicoes.py`** — gera a figura das distribuições self vs. blindado.
 - **`app/realtime_live_attack.py`** — ataque real-time na webcam, ASR ao vivo, HUD, servidor MJPEG, gravação, log CSV.
+- **`app/rodar_sessoes.py`** — executor do protocolo multi-sessão: lê `sessoes_plano.json` e roda as sessões (ATAQUE/PASSTHROUGH) chamando `realtime_live_attack.py` por subprocess, uma identidade por vez.
+- **`app/agg_sessoes_realtime.py`** — agrega as sessões de ataque: ASR por **sessão** (mediana ≥ limiar LFW) + IC de Wilson.
+- **`app/analise_controles_realtime.py`** — agrega os controles impostor (frames PASSTHROUGH): % de sessões aceitas nos limiares do LFW (esperado ~0%).
+- **`app/controle_intraclasse.py`** — valida cada sessão: similaridade genuína A-B da vítima (fotoA×fotoB) + nº de rostos por foto (diagnostica referências corrompidas).
 
 ### 3.3. DEPENDÊNCIAS (não rodo direto, mas os ativos IMPORTAM — não são lixo)
 Fornecem geração de pares reprodutível (seed=42) e funções legadas. Também são, em tese, entry points do pipeline **original** (swaps por `subprocess`, Jeito 1), mas hoje servem como biblioteca.
@@ -138,6 +142,8 @@ Flags:
 - `--record` — salva o vídeo com HUD; `--duration N` para após N s; `--max-frames N`; `--swap-every N` (swap a cada N frames); `--width/--height` (padrão 640×480); `--port` (padrão 8080); `--mode ATAQUE|PASSTHROUGH`.
 - Teclas (só com display gráfico): `m` alterna ATAQUE/PASSTHROUGH, `q` sai.
 
+**Protocolo multi-sessão** (15 sessões + controle impostor + validação intraclasse): ver **§8.6**.
+
 ---
 
 ## 5. Resultados: onde estão e o que significam
@@ -156,6 +162,10 @@ Todos em `app/results/`. **Distinção crucial:**
 - `tabela_final_blindada.txt` — tabela consolidada dos três (self vs. blindado) + leitura.
 - `distribuicoes_blindado.png`, `lfw_jeito1_vs_jeito2.png`, `ytf_jeito1_vs_jeito2.png` — figuras.
 - `realtime_live_log.csv` — log por frame da última sessão real-time; `demo_realtime*.mp4` — vídeos.
+- `sessoes_plano.json` — as 15 identidades do LFW sorteadas (semente 42) para o protocolo multi-sessão (registro da amostra).
+- `sessoes/atq_*.csv` (ataque) e `sessoes/imp_*.csv` (controle impostor) — log por frame de cada sessão.
+- `controle_intraclasse.txt` — similaridade genuína A-B de cada vítima + nº de rostos por foto (diagnóstico de validade das sessões).
+- `controles_realtime.txt` — agregado dos controles impostor (0/15 aceitas).
 
 ### Arquivos ANTIGOS — REMOVIDOS nesta versão limpa
 Os resultados do pipeline original (Jeito 1 / offline) foram **removidos** para não confundir: `lfw_scores.csv`, `ytf_scores.csv`, `lfw_swap_attack_results.csv`, `ytf_swap_attack_results.csv`, `realtime_asr_offline.csv`, `realtime_asr_summary.txt`, `realtime_attack_log.csv`, `*_conclusion.txt`, `experimental_config.txt`, plots antigos e as pastas `pose_analysis/`, `paper_plots/`, `realtime_frames/`. Ainda estão no repositório original e no histórico Git, se precisar.
@@ -165,9 +175,13 @@ Os resultados do pipeline original (Jeito 1 / offline) foram **removidos** para 
 |---|---|---|---|
 | **LFW** | 94.9% | **91.8%** | 91.3% |
 | **YTF** | 98.1% | **87.7%** | 84.3% |
-| **Real-time** | — | **100%** @ limiar herdado do LFW (FAR 1% e 0.1%) | 100% |
+| **Real-time** | — | **100%** (14/14 sessões válidas) @ limiar herdado do LFW | 100% |
 
-Leitura do real-time (corrigida após parecer): o limiar de operação é **propriedade do sistema** e deve vir da calibração em LFW (0.156 @FAR1%, 0.229 @FAR0.1%), **não** do conjunto pessoal de 8 pessoas (separação perfeita → limiar 0.698 *overfit*, que não é ponto de operação). Com o limiar herdado do LFW, os 357 frames da sessão oficial (`realtime_live_log.csv`, sim média 0.691) dão **ASR = 100%**. **Caveat estatístico:** 1 sessão, frames fortemente autocorrelacionados (ρ=0.866, n_eff≈26) → IC por frame superestima; a unidade é a **sessão/tentativa**, e IC real exige várias sessões. Número gerado por `app/realtime_asr_oficial.py`; o antigo "44% @ 0.698" era artefato do limiar overfit.
+Leitura do real-time (protocolo multi-sessão EXECUTADO — ver §8.6): a unidade estatística é a **sessão**, não o frame (frames são autocorrelacionados, ρ=0.866, n_eff≈26). Rodamos **15 sessões** contra 15 identidades do LFW sorteadas com semente fixa (42, congeladas em `sessoes_plano.json`). Regra de decisão fixada **antes** da coleta: sessão aceita se a **mediana** das similaridades ≥ limiar de operação herdado do LFW (0.1562 @FAR1%, 0.2289 @FAR0.1%).
+- **Ataque:** 14/15 = **93.3%** (IC95% Wilson 70.2–98.8) bruto. A única "falha" (Steve_Waugh) é **inválida**: a foto de referência tem 2 rostos e a detecção pegou a pessoa errada (similaridade genuína A-B = 0.10), comprovado por `controle_intraclasse.py`. Excluindo-a: **14/14 = 100%** (IC95% Wilson 78.5–100).
+- **Controle impostor** (PASSTHROUGH: rosto real do atacante vs. vítima, 15 sessões): **0/15 aceitas** → o verificador rejeita corretamente o rosto real (especificidade; `controles_realtime.txt`).
+
+O antigo "44% @ 0.698" era artefato de um limiar *overfit* do conjunto pessoal de 8 pessoas (separação perfeita → 0.698 não é ponto de operação).
 
 ---
 
@@ -189,8 +203,8 @@ Tudo em `app/realtime_live_attack.py`, função `run()`, salvo indicação.
 - **Cadastro pessoal pequeno:** 8 pessoas, 277 pares de impostor → FAR@0.1% não é confiável nesse conjunto e o limiar 0.698 é sensível à amostra. O ASR robusto vem de LFW/YTF.
 - **YTF blindagem:** dos 1000 ataques, **384 foram descartados** porque a pessoa-fonte tinha só um vídeo (sem como separar a referência); restaram **616**.
 - **Ambiente antigo perdido:** datasets e swaps foram regenerados numa única pilha consistente → os números offline antigos **não são diretamente comparáveis** (motivo da unificação).
-- **Real-time = prova de conceito ao vivo** (responde à crítica do ASR offline), não a fonte do ASR robusto.
-- **Detecção multi-face:** em quadros com mais de uma pessoa, pega-se a face de maior confiança (checado visualmente em `ablation_spotcheck/`, mas vale registrar).
+- **Real-time = protocolo multi-sessão** (15 sessões, unidade = sessão, IC de Wilson; ver §8.6). Responde à crítica do ASR offline e já tem IC. Amostra ainda modesta (n=15) → ampliar para IC mais estreito.
+- **Detecção multi-face:** pega-se a face de maior confiança. Isso **corrompeu 1 referência** no protocolo multi-sessão (Steve_Waugh: `fotoB` com 2 rostos → referência de outra pessoa, A-B=0.10), **detectada e excluída com justificativa** por `controle_intraclasse.py`. Nas 14 válidas as referências têm A-B 0.54–0.79. Fotos com >1 rosto exigem seleção da face correta.
 - **Injeção real (câmera virtual em Zoom/Meet):** ainda **não** implementada de ponta a ponta nesta fase. **(incerto se será escopo)**
 
 ---
@@ -229,19 +243,33 @@ O inswapper condiciona o swap num embedding ArcFace e o AdaFace tem espaço de i
 - **Checkpoint:** o modelo final é **AdaFace IR-50 WebFace4M** (`data/models/adaface_ir50_webface4m.ckpt`, local). Textos antigos diziam "CVLFace/MS1MV2 via HuggingFace" — **errado**, corrigido no README e nos prints de `baseline_lfw.py`/`baseline_ytf.py`.
 - **Real-time:** número oficial reprodutível via `app/realtime_asr_oficial.py`, no limiar **herdado do LFW** (não o 0.698 overfit). Logs antigos conflitantes (`realtime_asr_offline.csv`, `realtime_attack_log.csv`) são da versão antiga.
 
-### 8.6. Protocolo multi-sessão do real-time (#3) — para o IC
-Como os frames são autocorrelacionados (n_eff≈26), a unidade estatística tem de ser a **sessão**. Rode **≥ 15–20 sessões**, variando a **vítima** (identidade injetada) e, idealmente, o **atacante** (quem está na câmera). Cada vítima do dataset pessoal tem 2 fotos → use uma como fonte do swap e a outra como referência blindada. Exemplo de uma sessão:
+### 8.6. Protocolo multi-sessão do real-time (#3) — EXECUTADO
+Como os frames são autocorrelacionados (n_eff≈26), a unidade estatística é a **sessão**.
+
+**Passo 0 — amostra congelada:** sorteio de **15 identidades do LFW** com semente fixa (42) entre as que têm ≥2 fotos, salvo em `app/results/sessoes_plano.json`. Para cada uma: `fotoA` (`_0001`) = fonte do swap, `fotoB` (`_0002`) = referência blindada. A semente fixa torna a amostra reprodutível e afasta a suspeita de escolha a dedo.
+
+**Passo 1 — regra de decisão (fixada ANTES da coleta):** sessão aceita se a **mediana** das similaridades dos frames ≥ limiar de operação herdado do LFW (FAR1% = 0.1562).
+
+**Execução** (uma identidade por vez, ENTER entre elas):
 ```bash
-.venv/bin/python app/realtime_live_attack.py --source 0 \
-  --source-image data/dataset_pessoal/originais/mariasorrindoclaro.jpeg \
-  --ref-image    data/dataset_pessoal/originais/mariaserioclaro.jpeg \
-  --duration 30 --log sessoes/sess01.csv
+# ataque: deepfake da vítima injetado no rosto do atacante
+.venv/bin/python app/rodar_sessoes.py --modo ATAQUE --prefixo atq --duration 30
+# controle impostor: rosto REAL do atacante (sem swap) vs. referência da vítima
+.venv/bin/python app/rodar_sessoes.py --modo PASSTHROUGH --prefixo imp --duration 30
 ```
-Repita trocando a vítima (victor, joao, lucas, paulista…) e o número da sessão (`sess02.csv`, …). No fim, agregue com unidade = sessão e IC de Wilson:
+**Análise:**
 ```bash
-.venv/bin/python app/agg_sessoes_realtime.py "app/results/sessoes/*.csv"
+.venv/bin/python app/agg_sessoes_realtime.py "app/results/sessoes/atq_*.csv"  # ASR por sessão + IC Wilson
+.venv/bin/python app/analise_controles_realtime.py                            # controle impostor
+.venv/bin/python app/controle_intraclasse.py                                  # validade (A-B genuína + nº rostos)
 ```
-→ gera o ASR por sessão com IC 95%. Scripts: `realtime_live_attack.py` (flag `--log`) e `agg_sessoes_realtime.py`.
+
+**Resultados (15 sessões):**
+- **Ataque:** 14/15 = **93.3%** (Wilson 70.2–98.8) bruto; 1 sessão inválida (Steve_Waugh, referência multi-rosto, A-B=0.10); **14/14 = 100%** (Wilson 78.5–100) excluindo-a.
+- **Impostor:** **0/15 aceitas** — especificidade confirmada (o ASR alto não é verificador frouxo).
+- **Intraclasse:** vítimas válidas com A-B genuína 0.54–0.79; o deepfake recupera **66–92%** dela. As duas mais fracas (Greg_Rusedski 0.377, Stephen_Friedman 0.399) são **transferência parcial estável** (std ~0.02; foto-fonte não-frontal), ainda **acima** do ponto de operação.
+
+Scripts: `rodar_sessoes.py` (executor), `agg_sessoes_realtime.py` (ASR/Wilson), `analise_controles_realtime.py` (impostor), `controle_intraclasse.py` (validade). Flag `--log` do `realtime_live_attack.py`.
 
 ---
 
