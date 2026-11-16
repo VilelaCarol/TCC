@@ -32,7 +32,7 @@ A máquina antiga (RTX A5500, 24 GB) e duas pastas (`yolo8face_adaface/`, `facef
 - `onnxruntime.preload_dlls()` no import acha as libs CUDA/cuDNN do torch; `pre_check()` baixa os modelos do FaceFusion.
 
 ### 2.2. Conserto do gargalo do real-time (detecção tripla → única)
-A versão antiga rodava **3 detectores por frame** (YOLO avulso + detecção interna do FaceFusion + YOLO dentro do AdaFace), estourando os 6 GB. A versão nova reaproveita a **detecção única do FaceFusion** (bbox + 5 landmarks) tanto para o swap quanto para a verificação. Com isso, a verificação AdaFace custa ~4 ms e o **ASR passou a ser medido AO VIVO, dentro do loop** — não mais offline (salvar frames e calcular depois), que foi a crítica dos revisores.
+A versão antiga rodava **3 detectores por frame** (YOLO avulso + detecção interna do FaceFusion + YOLO dentro do AdaFace), estourando os 6 GB. A versão nova reaproveita a **detecção única do FaceFusion** (bbox + 5 landmarks) tanto para o swap quanto para a verificação. Com isso, a verificação AdaFace custa ~4 ms e o **ASR passou a ser medido AO VIVO, dentro do loop** — não mais offline (salvar frames e calcular depois), que foi um ponto da revisão do protocolo.
 
 ### 2.3. "Jeito 1" vs "Jeito 2" (a mesma régua)
 - **Jeito 1** = recorte cru da bounding box + canais **RGB**. É o pré-processamento legado do pipeline original.
@@ -100,7 +100,7 @@ Fornecem geração de pares reprodutível (seed=42) e funções legadas. Também
 - **`app/realtime_attack_pipeline.py`** — real-time antigo auto-contido (detecção tripla → OOM). Superado por `realtime_live_attack.py`.
 - **`app/realtime_api_server.py`** — servidor WebSocket/MJPEG antigo; tinha a verificação removida e salvava frames (ASR offline). Superado.
 - **`app/local_virtual_cam.py`** — cliente WebSocket + `pyvirtualcam` da arquitetura distribuída (par do `realtime_api_server`). Superado, mas o `pyvirtualcam` pode ser reaproveitado se um dia for feita a **injeção em Zoom/Meet** (câmera virtual).
-- **`app/compute_asr_offline.py`** — cálculo de ASR **offline** (a crítica dos revisores). Superado pela medição ao vivo + `reverify_*`.
+- **`app/compute_asr_offline.py`** — cálculo de ASR **offline** (ponto da revisão do protocolo). Superado pela medição ao vivo + `reverify_*`.
 - **`app/api.py`** — servidor FastAPI `/verify` usando funções Jeito 1. Não faz parte do pipeline atual.
 - **`app/download_ytf.py`** — baixa `aligned_images_DB` (alinhamento do próprio YTF). Superado: usamos `frame_images_DB` (frames crus) baixado manualmente.
 - **`app/net.py`** — cópia do backbone; **não é importado por ninguém** (o ativo usa `yolo8face_adaface/src/net.py`). Duplicata.
@@ -122,7 +122,7 @@ Sempre a partir da raiz do repositório. O `.venv` já tem tudo; use `.venv/bin/
 | `.venv/bin/python app/reverify_ytf_jeito12.py` | `ytf_*_jeito12.*`, `ytf_jeito1_vs_jeito2.png`; swaps em `data/YouTubeFaces/swaps/` | ~12 min | ~2.7 GB |
 | `N_BASE_EACH=500 N_ATTACK=300 .venv/bin/python app/ablation_ytf.py` | `ablation_ytf.txt`, `ablation_spotcheck/` | ~8 min (reusa swaps, sem FaceFusion) | ~0.5 GB |
 | `.venv/bin/python app/blindar_refs.py` | `blindado_lfw_ytf.txt`, `lfw_attack_blindado_scores.csv`, `ytf_attack_blindado_scores.csv` | ~5–8 min | ~0.5 GB |
-| `.venv/bin/python app/figura_distribuicoes.py` | `distribuicoes_blindado.png` | ~1 min | ~0.5 GB |
+| `.venv/bin/python app/figura_distribuicoes.py` | `distribuicoes_blindado.png` | ~seg | — (só CPU, lê os CSVs) |
 
 **Pré-requisito do YTF:** `data/YouTubeFaces/frame_images_DB/<Pessoa>/<vídeo>/<frame>.jpg` extraído (o `frame_images_DB.tar.gz` ~11.9 GB, frames CRUS — **não** o `aligned_images_DB`). Os scripts YTF **não** baixam isso sozinhos.
 
@@ -163,7 +163,7 @@ Todos em `app/results/`. **Distinção crucial:**
 - `ablation_ytf.txt` — tabela 2×2 da ablação.
 - `tabela_final_blindada.txt` — tabela consolidada dos três (self vs. blindado) + leitura.
 - `distribuicoes_blindado.png`, `lfw_jeito1_vs_jeito2.png`, `ytf_jeito1_vs_jeito2.png` — figuras.
-- `realtime_live_log.csv` — log por frame da última sessão real-time. Os vídeos `*.mp4` do real-time **não** vão para o repositório (privacidade: mostram pessoas identificáveis) — ficam só locais.
+- Os vídeos `*.mp4` do real-time **não** vão para o repositório (privacidade: mostram pessoas identificáveis) — ficam só locais. A sessão única antiga (`realtime_live_log.csv`) foi movida para `legado/`; o tempo real oficial são as `sessoes/` abaixo (ver §8.6).
 - `sessoes_plano.json` — as 15 identidades do LFW sorteadas (semente 42) para o protocolo multi-sessão (registro da amostra).
 - `sessoes/atq_*.csv` (ataque) e `sessoes/imp_*.csv` (controle impostor) — log por frame de cada sessão.
 - `controle_intraclasse.txt` — similaridade genuína A-B de cada vítima + nº de rostos por foto (diagnóstico de validade das sessões).
@@ -211,7 +211,7 @@ Tudo em `app/realtime_live_attack.py`, função `run()`, salvo indicação.
 
 ---
 
-## 8. Adendo pós-parecer (terminologia, descartes, controles, 2º verificador)
+## 8. Adendo pós-revisão (terminologia, descartes, controles, 2º verificador)
 
 ### 8.1. Convenção de terminologia (#6)
 Para a monografia, padronizar: a **vítima** (identidade personificada) é a **fonte do rosto** no swap; o **atacante** é quem aparece no quadro/câmera de destino. **Atenção:** no código, `run_swaps_lfw.py` chama de `source` a identidade personificada (vítima), mas `run_swaps_ytf.py` chama `source` de "atacante" e `target` de "vítima" — invertido nos comentários. **Não renomeei o código** (quebraria a geração de pares por seed e a reprodutibilidade); a convenção acima vale para o texto. Fixe uma frase no método e use sempre.
@@ -239,11 +239,11 @@ O inswapper condiciona o swap num embedding ArcFace e o AdaFace tem espaço de i
 | AdaFace (ArcFace-family) | 0.619 | 0.003 | 6.5% | **91.8%** | 91.3% |
 | **FaceNet (VGGFace2)** | 0.728 | 0.023 | 5.17% | **87.9%** | 83.7% |
 
-→ O ataque **transfere** para outra família (87.9% @FAR1%). A pequena queda vs AdaFace é o "bônus de mesma família" plausível (gerador ArcFace ↔ verificador ArcFace), mas a vulnerabilidade **não é artefato** disso. **Correção pós-parecer:** a 1ª tentativa alimentava o FaceNet com o recorte ArcFace 112→160 (fora da spec), inflando o EER para 6.73%; agora usa o MTCNN nativo (EER 5.17%). `facenet-pytorch==2.6.0` instalado com `--no-deps` (não mexe no torch 2.6).
+→ O ataque **transfere** para outra família (87.9% @FAR1%). A pequena queda vs AdaFace é o "bônus de mesma família" plausível (gerador ArcFace ↔ verificador ArcFace), mas a vulnerabilidade **não é artefato** disso. **Correção pós-revisão:** a 1ª tentativa alimentava o FaceNet com o recorte ArcFace 112→160 (fora da spec), inflando o EER para 6.73%; agora usa o MTCNN nativo (EER 5.17%). `facenet-pytorch==2.6.0` instalado com `--no-deps` (não mexe no torch 2.6).
 
-### 8.5. Correções factuais aplicadas (pós-parecer)
+### 8.5. Correções factuais aplicadas (pós-revisão)
 - **Checkpoint:** o modelo final é **AdaFace IR-50 WebFace4M** (`data/models/adaface_ir50_webface4m.ckpt`, local). Textos antigos diziam "CVLFace/MS1MV2 via HuggingFace" — **errado**, corrigido no README e nos prints de `baseline_lfw.py`/`baseline_ytf.py`.
-- **Real-time:** número oficial reprodutível via `app/realtime_asr_oficial.py`, no limiar **herdado do LFW** (não o 0.698 overfit). Logs antigos conflitantes (`realtime_asr_offline.csv`, `realtime_attack_log.csv`) são da versão antiga.
+- **Real-time:** o número oficial é o **protocolo multi-sessão** (15 sessões LFW, semente 42; `agg_sessoes_realtime.py` + `analise_controles_realtime.py`), no limiar **herdado do LFW** (não o 0.698 overfit) — ver §8.6. A sessão única antiga (`realtime_asr_oficial.py`, 357 quadros do conjunto pessoal) foi movida para `legado/`.
 
 ### 8.6. Protocolo multi-sessão do real-time (#3) — EXECUTADO
 Como os frames são autocorrelacionados (n_eff≈26), a unidade estatística é a **sessão**.

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Controles negativos do real-time (parecer #3) — especificidade ao vivo.
+Controles negativos do real-time (revisão do protocolo item 3) — especificidade ao vivo.
 ==============================================================================
 Lê os logs de CONTROLE de app/results/sessoes/ (imp_*.csv e gen_*.csv), filtra
 os frames mode == "PASSTHROUGH" (rosto REAL do atacante, SEM deepfake) e reporta,

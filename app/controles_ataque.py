@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Controles do lado do ATAQUE (parecer #8) — LFW, jeito 2.
+Controles do lado do ATAQUE (revisão do protocolo item 8) — LFW, jeito 2.
 ========================================================
 Para cada deepfake swap_{src}_in_{tgt} (rosto do SRC colado na foto do TGT),
 mede a similaridade contra três referências DIFERENTES das usadas:

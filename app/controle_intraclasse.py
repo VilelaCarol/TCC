@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Controle de variação intraclasse do LFW (real-time, parecer #3).
+Controle de variação intraclasse do LFW (real-time, revisão do protocolo item 3).
 ==============================================================================
 Antes de concluir que o ataque FALHOU numa identidade, é preciso saber se as
 DUAS fotos daquela pessoa no LFW (fotoA = fonte do swap, fotoB = referência)

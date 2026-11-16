@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Executor do protocolo multi-sessão do real-time (parecer #3).
+Executor do protocolo multi-sessão do real-time (revisão do protocolo item 3).
 ==============================================================================
 Lê o plano congelado (app/results/sessoes_plano.json, gerado com semente fixa)
 e roda as sessões EM SEQUÊNCIA, uma identidade por vez, chamando

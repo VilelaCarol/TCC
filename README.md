@@ -45,9 +45,7 @@ N_BASE_EACH=500 N_ATTACK=300 .venv/bin/python app/ablation_ytf.py
   --source-image data/dataset_pessoal/originais/victorsorrindoclaro.jpeg \
   --ref-image    data/dataset_pessoal/originais/victorserioclaro.jpeg \
   --duration 60 --record app/results/demo.mp4
-# ASR oficial do tempo real (reprodutível, limiar herdado do LFW)
-.venv/bin/python app/realtime_asr_oficial.py
-# Protocolo multi-sessão (15 identidades LFW, semente 42) + controles — ver GUIA §8.6
+# Tempo real — NÚMERO OFICIAL: protocolo multi-sessão (15 identidades LFW, semente 42) + controles — ver GUIA §8.6
 .venv/bin/python app/rodar_sessoes.py --modo ATAQUE      --prefixo atq --duration 30
 .venv/bin/python app/rodar_sessoes.py --modo PASSTHROUGH --prefixo imp --duration 30
 .venv/bin/python app/agg_sessoes_realtime.py "app/results/sessoes/atq_*.csv"  # ASR/sessão + IC Wilson
@@ -59,7 +57,7 @@ N_BASE_EACH=500 N_ATTACK=300 .venv/bin/python app/ablation_ytf.py
 
 - **`app/`** — scripts do pipeline (ativos + dependências de geração de pares). Mapa completo e papel de cada um no **GUIA §3**.
 - **`yolo8face_adaface/`** — wrapper do verificador (`AdaFaceVerifier`: detecção, alinhamento, embedding, verificação).
-- **`app/results/`** — resultados finais (scores `*_jeito12`, blindado, ablação, FaceNet, figuras, log do tempo real).
+- **`app/results/`** — resultados finais (scores `*_jeito12`, blindado, ablação, FaceNet, figuras, sessões do tempo real).
 - **`app/utils/`** — utilitários avulsos mantidos: `download_lfw.py` (obtenção do LFW) e `visualize_alignment.py` (figura dos 5 landmarks).
 - **`GUIA_DO_PROJETO.md`** — documentação detalhada e autoritativa.
 

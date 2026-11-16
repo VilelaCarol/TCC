@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Segundo verificador: FaceNet (InceptionResnetV1 / VGGFace2) — parecer #9.
+Segundo verificador: FaceNet (InceptionResnetV1 / VGGFace2) — revisão do protocolo item 9.
 ========================================================================
 Ameaça à validade: o inswapper condiciona o swap num embedding da família ArcFace,
 e o AdaFace tem espaço de identidade próximo. Este script repete a verificação do
 LFW com FaceNet (outra arquitetura e outro treino) para ver se o ataque transfere.
 
-CORREÇÃO (pós-parecer): usa o PIPELINE NATIVO do FaceNet — detecção+alinhamento
+CORREÇÃO (pós-revisão): usa o PIPELINE NATIVO do FaceNet — detecção+alinhamento
 pelo MTCNN do facenet-pytorch para 160x160 RGB com a normalização própria dele
 (post_process). Antes usava o recorte ArcFace 112->160 (alinhamento do AdaFace),
 fora da especificação do FaceNet, o que inflava o EER.
