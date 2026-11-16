@@ -82,6 +82,7 @@ Dúvida legítima: "deu tudo certo, não é bug?" Controle em imagens estáticas
 - **`app/ablation_ytf.py`** — ablação 2×2 (alinhamento × cor), reusa swaps do disco.
 - **`app/blindar_refs.py`** — re-verifica LFW e YTF com referência **separada** (blindada).
 - **`app/figura_distribuicoes.py`** — gera a figura das distribuições self vs. blindado.
+- **`app/figuras_monografia.py`** — gera as 3 figuras da monografia (`fig1_roc`, `fig2_asr`, `fig3_tempo_real`) a partir dos CSVs já versionados; só CPU, reprodutível (limiares recalculados dos scores).
 - **`app/realtime_live_attack.py`** — ataque real-time na webcam, ASR ao vivo, HUD, servidor MJPEG, gravação, log CSV.
 - **`app/rodar_sessoes.py`** — executor do protocolo multi-sessão: lê `sessoes_plano.json` e roda as sessões (ATAQUE/PASSTHROUGH) chamando `realtime_live_attack.py` por subprocess, uma identidade por vez.
 - **`app/agg_sessoes_realtime.py`** — agrega as sessões de ataque: ASR por **sessão** (mediana ≥ limiar LFW) + IC de Wilson.
@@ -123,6 +124,7 @@ Sempre a partir da raiz do repositório. O `.venv` já tem tudo; use `.venv/bin/
 | `N_BASE_EACH=500 N_ATTACK=300 .venv/bin/python app/ablation_ytf.py` | `ablation_ytf.txt`, `ablation_spotcheck/` | ~8 min (reusa swaps, sem FaceFusion) | ~0.5 GB |
 | `.venv/bin/python app/blindar_refs.py` | `blindado_lfw_ytf.txt`, `lfw_attack_blindado_scores.csv`, `ytf_attack_blindado_scores.csv` | ~5–8 min | ~0.5 GB |
 | `.venv/bin/python app/figura_distribuicoes.py` | `distribuicoes_blindado.png` | ~seg | — (só CPU, lê os CSVs) |
+| `.venv/bin/python app/figuras_monografia.py` | `fig1_roc.png`, `fig2_asr.png`, `fig3_tempo_real.png` | ~seg | — (só CPU, lê os CSVs) |
 
 **Pré-requisito do YTF:** `data/YouTubeFaces/frame_images_DB/<Pessoa>/<vídeo>/<frame>.jpg` extraído (o `frame_images_DB.tar.gz` ~11.9 GB, frames CRUS — **não** o `aligned_images_DB`). Os scripts YTF **não** baixam isso sozinhos.
 
@@ -162,7 +164,8 @@ Todos em `app/results/`. **Distinção crucial:**
 - `blindado_lfw_ytf.txt` — ASR **blindado** em todos os limiares.
 - `ablation_ytf.txt` — tabela 2×2 da ablação.
 - `tabela_final_blindada.txt` — tabela consolidada dos três (self vs. blindado) + leitura.
-- `distribuicoes_blindado.png`, `lfw_jeito1_vs_jeito2.png`, `ytf_jeito1_vs_jeito2.png` — figuras.
+- `distribuicoes_blindado.png`, `lfw_jeito1_vs_jeito2.png`, `ytf_jeito1_vs_jeito2.png` — figuras auxiliares.
+- `fig1_roc.png`, `fig2_asr.png`, `fig3_tempo_real.png` — figuras da monografia (geradas por `figuras_monografia.py`, reprodutíveis dos CSVs).
 - Os vídeos `*.mp4` do real-time **não** vão para o repositório (privacidade: mostram pessoas identificáveis) — ficam só locais. A sessão única antiga (`realtime_live_log.csv`) foi movida para `legado/`; o tempo real oficial são as `sessoes/` abaixo (ver §8.6).
 - `sessoes_plano.json` — as 15 identidades do LFW sorteadas (semente 42) para o protocolo multi-sessão (registro da amostra).
 - `sessoes/atq_*.csv` (ataque) e `sessoes/imp_*.csv` (controle impostor) — log por frame de cada sessão.

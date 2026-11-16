@@ -38,6 +38,8 @@ Leitura detalhada e tabela self × blindado: `app/results/tabela_final_blindada.
 N_BASE_EACH=500 N_ATTACK=300 .venv/bin/python app/ablation_ytf.py
 # Blindagem (referência separada) + figura
 .venv/bin/python app/blindar_refs.py && .venv/bin/python app/figura_distribuicoes.py
+# Figuras da monografia (ROC, ASR×limiar, tempo real multi-sessão) — só CPU, lê os CSVs
+.venv/bin/python app/figuras_monografia.py
 # Segundo verificador (FaceNet)
 .venv/bin/python app/facenet_crosscheck.py
 # Tempo real (webcam) — abre http://localhost:8080/
