@@ -3,15 +3,15 @@ TABELA FINAL — ASR BLINDADO (referência separada da fonte do swap), JEITO 2
 Victim system: YOLOv8-Face + AdaFace IR-50 | Ataque: FaceFusion inswapper_128
 Métrica: ASR (Attack Success Rate) = % de ataques com similaridade >= threshold
 Blindado = referência de verificação é uma imagem/vídeo DIFERENTE da usada no swap
-Todos os pares entram; thresholds por literatura (0.45/0.60), EER e FAR fixo.
+Todos os pares entram; thresholds fixos da config. padrão do verificador (0.45/0.60), EER e FAR fixo.
 ================================================================================
 
 LFW (foto)   — baseline jeito2: genuína 0.619 | impostor 0.003 | EER 6.50%
              — ataque médio: self 0.750 -> BLINDADO 0.516
              — aceitação genuína (TPR) @0.60 = 70.7%  (0.60 rejeita ~29% dos legítimos)
   threshold        valor     ASR self    ASR BLINDADO
-  0.45 (lit.)     0.4500       94.7%        79.8%
-  0.60 (lit.)     0.6000       93.7%        33.6%
+  0.45 (fixo)     0.4500       94.7%        79.8%
+  0.60 (fixo)     0.6000       93.7%        33.6%
   EER             0.0982       95.4%        92.6%
   FAR @ 1%        0.1562       94.9%        91.8%   <= número robusto
   FAR @ 0.1%      0.2289       94.8%        91.3%   <= número robusto
@@ -21,8 +21,8 @@ YTF (vídeo)  — baseline jeito2: genuína 0.544 | impostor 0.005 | EER 4.20%
              — aceitação genuína (TPR) @0.60 = 45.5%  (0.60 rejeita ~55% dos legítimos!)
              — 616 ataques usados (384 pulados: source com 1 só vídeo)
   threshold        valor     ASR self    ASR BLINDADO
-  0.45 (lit.)     0.4500       96.6%        44.2%
-  0.60 (lit.)     0.6000       89.6%        11.7%
+  0.45 (fixo)     0.4500       96.6%        44.2%
+  0.60 (fixo)     0.6000       89.6%        11.7%
   EER             0.1144       98.2%        90.4%
   FAR @ 1%        0.1615       98.1%        87.7%   <= número robusto
   FAR @ 0.1%      0.2173       97.7%        84.3%   <= número robusto
@@ -52,7 +52,7 @@ HEADLINE (reportar no texto) — BLINDADO + CALIBRADO POR FAR:
      threshold arbitrário).
 
 LEITURA:
-  - Thresholds fixos 0.45/0.60 NÃO são o ponto de operação: em 0.60 o sistema
+  - Thresholds fixos 0.45/0.60 (config. padrão) NÃO são o ponto de operação: em 0.60 o sistema
     rejeitaria 29% (LFW) a 55% (YTF) dos usuários legítimos.
   - O limiar de operação é PROPRIEDADE DO SISTEMA e deve vir da calibração em LFW
     (milhares de identidades), NÃO do conjunto pessoal de 8 pessoas (separação

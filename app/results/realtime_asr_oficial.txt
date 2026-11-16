@@ -10,8 +10,8 @@ frames de ataque: 357 | similaridade média: 0.691 (min 0.530, max 0.760)
    EER_LFW      thr=0.0982  ASR= 100.0%
 
 >> Só para comparação (NÃO são ponto de operação):
-   0.45 (lit.)   thr=0.4500  ASR= 100.0%
-   0.60 (lit.)   thr=0.6000  ASR=  98.6%
+   0.45 (fixo)   thr=0.4500  ASR= 100.0%
+   0.60 (fixo)   thr=0.6000  ASR=  98.6%
    0.698 (pessoal, overfit 8 pessoas)  ASR=  44.0%
 
 >> Validade estatística:

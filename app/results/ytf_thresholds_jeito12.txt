@@ -1,6 +1,6 @@
 
 ======================================================================
-RESUMO YTF (todos os pares; thresholds por EER/FAR/literatura)
+RESUMO YTF (todos os pares; thresholds por EER/FAR/fixos)
 ======================================================================
 
 ### jeito1 (cru+RGB)

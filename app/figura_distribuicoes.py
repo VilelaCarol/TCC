@@ -83,7 +83,7 @@ for ax, (title, imp, gen, self_a, blind_a, thr, thr_lbl) in zip(axes, panels):
         ax.axvline(0.82, color=C["self"], ls="--", lw=2.0, label="ataque self (~0.82)")
     ax.hist(blind_a, bins=bins, density=True, color=C["blind"], alpha=0.62, label="ataque (blindado)")
     ax.axvline(thr, color="#555", lw=1.6, label=thr_lbl)
-    ax.axvline(0.60, color="#111", lw=1.2, ls=":", label="0.60 (lit.)")
+    ax.axvline(0.60, color="#111", lw=1.2, ls=":", label="0.60 (fixo)")
     ax.set_title(title, fontsize=12, weight="bold")
     ax.set_xlabel("similaridade cosseno")
     ax.set_xlim(-0.15, 1.0)

@@ -10,7 +10,7 @@ swap. Depois computa ROC/EER/thresholds em FAR fixo e o ASR em todos os limiares
 Travas de integridade (defesa na banca):
   * MESMA geração de pares/seed do run_swaps_lfw original (reprodutível).
   * TODOS os pares entram; nenhuma seleção de "swaps bons".
-  * Thresholds só por EER / FAR fixo / literatura (0.45, 0.60) — nunca escolhidos
+  * Thresholds só por EER / FAR fixo / fixos da config. padrão (0.45, 0.60) — nunca escolhidos
     para maximizar ASR.
   * jeito 1 e jeito 2 medidos na mesma imagem -> before/after limpo.
 
@@ -187,7 +187,7 @@ def P(s=""):
     print(s); lines.append(s)
 
 P("\n" + "=" * 70)
-P("RESUMO LFW (todos os pares; thresholds por EER/FAR/literatura)")
+P("RESUMO LFW (todos os pares; thresholds por EER/FAR/fixos)")
 P("=" * 70)
 for b in summary:
     P(f"\n### {b['jeito']}")

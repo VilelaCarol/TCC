@@ -1,0 +1,17 @@
+LFW (foto) — self x blindado nos MESMOS 3000 pares
+  similaridade média: self=0.750  blindado=0.516
+  threshold     valor   ASR self  ASR blindado
+  0.45         0.4500      94.7%         79.8%
+  0.60         0.6000      93.7%         33.6%
+  EER          0.0982      95.4%         92.6%
+  FAR1%        0.1562      94.9%         91.8%
+  FAR0.1%      0.2289      94.8%         91.3%
+
+YTF (vídeo) — self x blindado nos MESMOS 616 pares
+  similaridade média: self=0.701  blindado=0.398
+  threshold     valor   ASR self  ASR blindado
+  0.45         0.4500      97.1%         44.2%
+  0.60         0.6000      90.3%         11.7%
+  EER          0.1144      98.4%         90.4%
+  FAR1%        0.1615      98.2%         87.7%
+  FAR0.1%      0.2173      98.1%         84.3%

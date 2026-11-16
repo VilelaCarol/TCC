@@ -6,7 +6,7 @@ Responde ao parecer (itens 1, 2, 3):
   1. Define UMA sessão oficial (realtime_live_log.csv) e gera o número por SCRIPT.
   2. Usa o limiar de operação HERDADO do LFW (calibrado por FAR), não o 0.698 do
      conjunto pessoal de 8 pessoas (que tem separação perfeita e não é ponto de
-     operação). Reporta 0.45/0.60 (literatura) e 0.698 (pessoal) só p/ comparação.
+     operação). Reporta 0.45/0.60 (limiares fixos da config. padrão) e 0.698 (pessoal) só p/ comparação.
   3. Reporta a autocorrelação dos frames (rho lag-1) e o n efetivo, deixando claro
      que a unidade estatística é a SESSÃO (n=1 aqui) — IC por frame superestima.
 
@@ -60,8 +60,8 @@ for name in ["FAR1%_LFW", "FAR0.1%_LFW", "EER_LFW"]:
     P(f"   {name:<12} thr={thr_lfw[name]:.4f}  ASR={asr(thr_lfw[name]):6.1f}%")
 P("")
 P(">> Só para comparação (NÃO são ponto de operação):")
-P(f"   0.45 (lit.)   thr=0.4500  ASR={asr(0.45):6.1f}%")
-P(f"   0.60 (lit.)   thr=0.6000  ASR={asr(0.60):6.1f}%")
+P(f"   0.45 (fixo)   thr=0.4500  ASR={asr(0.45):6.1f}%")
+P(f"   0.60 (fixo)   thr=0.6000  ASR={asr(0.60):6.1f}%")
 P(f"   0.698 (pessoal, overfit 8 pessoas)  ASR={asr(0.698):6.1f}%")
 P("")
 P(">> Validade estatística:")

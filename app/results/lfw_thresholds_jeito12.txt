@@ -1,6 +1,6 @@
 
 ======================================================================
-RESUMO LFW (todos os pares; thresholds por EER/FAR/literatura)
+RESUMO LFW (todos os pares; thresholds por EER/FAR/fixos)
 ======================================================================
 
 ### jeito1 (cru+RGB)

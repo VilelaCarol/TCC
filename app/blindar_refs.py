@@ -84,6 +84,29 @@ def report(name, thr, eer, new_scores, old_scores, n_total, n_skip):
         print(f"  {k:<10}{thr[k]:>9.4f}{asr(old_scores, thr[k]):>10.1f}%{asr(new_scores, thr[k]):>13.1f}%")
     return {k: asr(new_scores, thr[k]) for k in thr}
 
+
+# ---- identificação por par (permite comparar self x blindado nos MESMOS pares) ----
+def src_names(csv_name):
+    return [r["source_name"] for r in csv.DictReader(open(os.path.join(RESULTS, csv_name)))]
+
+def save_pairs(path, header, meta):
+    with open(path, "w", newline="") as fh:
+        w = csv.writer(fh); w.writerow(header)
+        for m in meta:
+            if m[-2] is not None:
+                w.writerow(list(m[:-2]) + [f"{m[-2]:.6f}", "" if m[-1] is None else f"{m[-1]:.6f}"])
+
+def same_pairs_report(name, thr, meta):
+    pares = [(m[-2], m[-1]) for m in meta if m[-2] is not None and m[-1] is not None]
+    blind = [b for b, _ in pares]; self_ = [s for _, s in pares]
+    linhas = [f"{name} — self x blindado nos MESMOS {len(pares)} pares",
+              f"  similaridade média: self={np.mean(self_):.3f}  blindado={np.mean(blind):.3f}",
+              f"  {'threshold':<10}{'valor':>9}{'ASR self':>11}{'ASR blindado':>14}"]
+    for k in ["0.45", "0.60", "EER", "FAR1%", "FAR0.1%"]:
+        linhas.append(f"  {k:<10}{thr[k]:>9.4f}{asr(self_, thr[k]):>10.1f}%{asr(blind, thr[k]):>13.1f}%")
+    print("\n" + "\n".join(linhas))
+    return linhas
+
 # ============================================================ LFW
 print("\n[LFW] re-verificando 3000 ataques com referência separada...")
 lfw_thr, lfw_eer = thresholds_from_csv(os.path.join(RESULTS, "lfw_scores_jeito12.csv"))
@@ -92,6 +115,8 @@ lfw_pairs = generate_swap_pairs(lfw_ids, NUM_SWAPS)
 # scores "self" antigos (coluna similarity_j2 do CSV de ataque)
 old_lfw = [float(r["similarity_j2"]) if r["similarity_j2"] else None
            for r in csv.DictReader(open(os.path.join(RESULTS, "lfw_swap_attack_jeito12.csv")))]
+old_lfw_src = src_names("lfw_swap_attack_jeito12.csv")
+lfw_meta, lfw_desalinhados = [], 0
 new_lfw, skip_lfw = [], 0
 t0 = time.time()
 for i, (src_name, src_path, tgt_name, tgt_path) in enumerate(lfw_pairs):
@@ -103,11 +128,19 @@ for i, (src_name, src_path, tgt_name, tgt_path) in enumerate(lfw_pairs):
         skip_lfw += 1; continue
     e_swap = emb_img(cv2.imread(swap_file)); e_ref = emb_path(others[0])
     new_lfw.append(get_similarity(e_swap, e_ref) if (e_swap is not None and e_ref is not None) else None)
+    if i >= len(old_lfw_src) or old_lfw_src[i] != src_name:
+        lfw_desalinhados += 1
+    lfw_meta.append((i, src_name, os.path.basename(src_path), tgt_name, os.path.basename(tgt_path),
+                     new_lfw[-1], old_lfw[i] if (i < len(old_lfw) and lfw_desalinhados == 0) else None))
     if (i+1) % 1000 == 0: print(f"   LFW {i+1}/{len(lfw_pairs)} ({time.time()-t0:.0f}s)")
 new_lfw = [s for s in new_lfw if s is not None]
 np.savetxt(os.path.join(RESULTS, "lfw_attack_blindado_scores.csv"),
            np.array(new_lfw), delimiter=",", header="similarity_blindado", comments="")
 lfw_blind = report("LFW (foto)", lfw_thr, lfw_eer, new_lfw, old_lfw, len(lfw_pairs), skip_lfw)
+if lfw_desalinhados: print(f"  AVISO: {lfw_desalinhados} pares LFW desalinhados com lfw_swap_attack_jeito12.csv -> self por par omitido")
+save_pairs(os.path.join(RESULTS, "lfw_attack_blindado_pares.csv"),
+           ["pair_idx", "source_name", "source_img", "target_name", "target_img", "similarity_blindado", "similarity_self"], lfw_meta)
+lfw_same = same_pairs_report("LFW (foto)", lfw_thr, lfw_meta)
 
 # ============================================================ YTF
 print("\n[YTF] re-verificando ataques com vídeo de referência diferente...")
@@ -116,6 +149,8 @@ ytf_ids = get_ytf_identities(YTF_DATA_DIR)
 ytf_pairs = generate_attack_pairs(ytf_ids, NUM_ATTACKS)
 old_ytf = [float(r["similarity_j2"]) if r["similarity_j2"] else None
            for r in csv.DictReader(open(os.path.join(RESULTS, "ytf_swap_attack_jeito12.csv")))]
+old_ytf_src = src_names("ytf_swap_attack_jeito12.csv")
+ytf_meta, ytf_desalinhados = [], 0
 new_ytf, skip_ytf = [], 0
 t0 = time.time()
 for i, (src_name, src_vid, tgt_name, tgt_vid) in enumerate(ytf_pairs):
@@ -126,14 +161,25 @@ for i, (src_name, src_vid, tgt_name, tgt_vid) in enumerate(ytf_pairs):
     swap_mean = mean_emb([emb_img(cv2.imread(s)) for s in swaps])
     ref_mean = mean_emb([emb_path(p) for p in sample_frames(ytf_ids[src_name][other_vids[0]])])
     new_ytf.append(get_similarity(swap_mean, ref_mean) if (swap_mean is not None and ref_mean is not None) else None)
+    if i >= len(old_ytf_src) or old_ytf_src[i] != src_name:
+        ytf_desalinhados += 1
+    ytf_meta.append((i, src_name, src_vid, tgt_name, tgt_vid, other_vids[0],
+                     new_ytf[-1], old_ytf[i] if (i < len(old_ytf) and ytf_desalinhados == 0) else None))
     if (i+1) % 200 == 0: print(f"   YTF {i+1}/{len(ytf_pairs)} ({time.time()-t0:.0f}s)")
 new_ytf = [s for s in new_ytf if s is not None]
 np.savetxt(os.path.join(RESULTS, "ytf_attack_blindado_scores.csv"),
            np.array(new_ytf), delimiter=",", header="similarity_blindado", comments="")
 ytf_blind = report("YTF (vídeo)", ytf_thr, ytf_eer, new_ytf, old_ytf, len(ytf_pairs), skip_ytf)
+if ytf_desalinhados: print(f"  AVISO: {ytf_desalinhados} pares YTF desalinhados com ytf_swap_attack_jeito12.csv -> self por par omitido")
+save_pairs(os.path.join(RESULTS, "ytf_attack_blindado_pares.csv"),
+           ["pair_idx", "source_name", "source_vid", "target_name", "target_vid", "ref_vid", "similarity_blindado", "similarity_self"], ytf_meta)
+ytf_same = same_pairs_report("YTF (vídeo)", ytf_thr, ytf_meta)
 
 # salva
 with open(os.path.join(RESULTS, "blindado_lfw_ytf.txt"), "w") as f:
     f.write("LFW blindado ASR: " + str({k: round(v,1) for k,v in lfw_blind.items()}) + "\n")
     f.write("YTF blindado ASR: " + str({k: round(v,1) for k,v in ytf_blind.items()}) + "\n")
 print(f"\nsalvo: {os.path.join(RESULTS, 'blindado_lfw_ytf.txt')}")
+with open(os.path.join(RESULTS, "blindado_mesmos_pares.txt"), "w") as f:
+    f.write("\n".join(lfw_same + [""] + ytf_same) + "\n")
+print(f"salvo: {os.path.join(RESULTS, 'blindado_mesmos_pares.txt')}")

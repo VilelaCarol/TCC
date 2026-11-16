@@ -9,7 +9,7 @@ diferença entre jeito 1 e jeito 2 é o recorte (cru+RGB vs alinhado+BGR); os sw
 são os mesmos.
 
 Reprodutível: mesma geração de pares/seed (generate_pairs / generate_attack_pairs)
-dos scripts originais. TODOS os pares entram. Thresholds só por EER/FAR/literatura.
+dos scripts originais. TODOS os pares entram. Thresholds só por EER/FAR/fixos da config. padrão (0.45/0.60).
 
 Saídas em app/results/:
   ytf_scores_jeito12.csv, ytf_swap_attack_jeito12.csv,
@@ -187,7 +187,7 @@ def asr(scores, t):
 lines = []
 def P(s=""):
     print(s); lines.append(s)
-P("\n" + "=" * 70); P("RESUMO YTF (todos os pares; thresholds por EER/FAR/literatura)"); P("=" * 70)
+P("\n" + "=" * 70); P("RESUMO YTF (todos os pares; thresholds por EER/FAR/fixos)"); P("=" * 70)
 summary = []
 for jeito, col in [("jeito1 (cru+RGB)", 1), ("jeito2 (alinhado+BGR)", 2)]:
     labels = [r[0] for r in base_rows]; bscores = [r[col] for r in base_rows]
