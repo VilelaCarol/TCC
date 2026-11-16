@@ -1,0 +1,53 @@
+device: cuda
+==============================================================================
+PLANO DE SESSÕES — EXPERIMENTO DE CÂMERA VIRTUAL
+==============================================================================
+plano original: /home/carolis/Documentos/TCC/DeepFake-as-a-Spoofing-Attack/app/results/sessoes_plano.json (15 identidades)
+critério de validade: similaridade genuína fotoA x fotoB >= 0.40
+
+identidade                     A-B  rostos A/B   situação
+------------------------------------------------------------------------------
+Queen_Latifah                0.642         1/1   VÁLIDA
+Carlos_Moya                  0.634         1/1   VÁLIDA
+Alexandra_Vodjanikova        0.544         1/1   VÁLIDA
+Steven_Seagal                0.718         1/1   VÁLIDA
+Greg_Rusedski                0.569         1/1   VÁLIDA
+GL_Peiris                    0.743         1/1   VÁLIDA
+Ethan_Hawke                  0.789         1/1   VÁLIDA
+Christine_Gregoire           0.757         1/1   VÁLIDA
+Stephen_Friedman             0.554         1/1   VÁLIDA
+Bruce_Weber                  0.710         1/1   VÁLIDA
+Robert_Horan                 0.745         1/1   VÁLIDA
+Steve_Waugh                  0.100         1/2   INVÁLIDA (abaixo do critério)
+Michelle_Kwan                0.582         2/4   VÁLIDA
+Bob_Beauprez                 0.782         2/1   VÁLIDA
+Oleksandr_Moroz              0.780         1/2   VÁLIDA
+
+válidas: 14 | inválidas: 1 -> Steve_Waugh
+
+Faltam 1 identidade(s). Continuando o sorteio original (semente 42).
+  sorteio reproduzido: as 15 primeiras extrações conferem com o plano original.
+  16ª extração: Kamal_Kharrazi             A-B=-0.023  rostos 2/3 -> reprovada no critério
+  17ª extração: Amanda_Beard               A-B=0.743   rostos 1/2 -> ACEITA como substituta
+
+==============================================================================
+PLANO FINAL — 15 sessões
+==============================================================================
+  01  Queen_Latifah              A-B=0.6425  plano original (semente 42)
+  02  Carlos_Moya                A-B=0.6339  plano original (semente 42)
+  03  Alexandra_Vodjanikova      A-B=0.5444  plano original (semente 42)
+  04  Steven_Seagal              A-B=0.7176  plano original (semente 42)
+  05  Greg_Rusedski              A-B=0.5692  plano original (semente 42)
+  06  GL_Peiris                  A-B=0.743  plano original (semente 42)
+  07  Ethan_Hawke                A-B=0.7888  plano original (semente 42)
+  08  Christine_Gregoire         A-B=0.7572  plano original (semente 42)
+  09  Stephen_Friedman           A-B=0.5542  plano original (semente 42)
+  10  Bruce_Weber                A-B=0.7103  plano original (semente 42)
+  11  Robert_Horan               A-B=0.7453  plano original (semente 42)
+  12  Michelle_Kwan              A-B=0.5823  plano original (semente 42)
+  13  Bob_Beauprez               A-B=0.7823  plano original (semente 42)
+  14  Oleksandr_Moroz            A-B=0.7803  plano original (semente 42)
+  15  Amanda_Beard               A-B=0.7431  substituta (17ª extração do mesmo sorteio)
+
+salvo: /home/carolis/Documentos/TCC/DeepFake-as-a-Spoofing-Attack/app/results/sessoes_plano_vcam.json
+Commite este plano e o PROTOCOLO_VCAM.md ANTES de gravar a primeira sessão.

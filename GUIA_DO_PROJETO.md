@@ -6,7 +6,7 @@
 
 ## 1. Visão geral
 
-O projeto é um **red teaming** (avaliação de vulnerabilidade) de um sistema de **verificação facial** contra ataques de **deepfake por face swap injetado na câmera**.
+O projeto é um **red teaming** (avaliação de vulnerabilidade) de um sistema de **verificação facial** contra ataques de **deepfake por face swap injetado no laço de captura** (injeção emulada; ver §7 e `PROTOCOLO_VCAM.md`).
 
 - **Sistema-vítima:** `YOLOv8-Face` (detecção + 5 landmarks) → `AdaFace IR-50` (embedding facial de 512 dimensões, treinado no WebFace4M) → **similaridade cosseno** vs. um limiar.
 - **Ataque:** `FaceFusion / inswapper_128` troca o rosto da vítima no quadro do atacante (deepfake).
@@ -210,7 +210,7 @@ Tudo em `app/realtime_live_attack.py`, função `run()`, salvo indicação.
 - **Ambiente antigo perdido:** datasets e swaps foram regenerados numa única pilha consistente → os números offline antigos **não são diretamente comparáveis** (motivo da unificação).
 - **Real-time = protocolo multi-sessão** (15 sessões, unidade = sessão, IC de Wilson; ver §8.6). Responde à crítica do ASR offline e já tem IC. Amostra ainda modesta (n=15) → ampliar para IC mais estreito.
 - **Detecção multi-face:** pega-se a face de maior confiança. Isso **corrompeu 1 referência** no protocolo multi-sessão (Steve_Waugh: `fotoB` com 2 rostos → referência de outra pessoa, A-B=0.10), **detectada e excluída com justificativa** por `controle_intraclasse.py`. Nas 14 válidas as referências têm A-B 0.54–0.79. Fotos com >1 rosto exigem seleção da face correta.
-- **Injeção real (câmera virtual em Zoom/Meet):** ainda **não** implementada de ponta a ponta nesta fase. **(incerto se será escopo)**
+- **Injeção por câmera virtual:** o cenário ao vivo atual é uma injeção **emulada** — o quadro manipulado vai direto para a verificação, sem passar por um dispositivo v4l2loopback, e o alinhamento reaproveita os pontos fiduciais do detector do FaceFusion, de modo que o YOLOv8-Face do sistema-alvo não vê o deepfake. O protocolo que remove as duas limitações está em `PROTOCOLO_VCAM.md`, com os scripts `app/vcam_atacante.py`, `app/vcam_verificador.py`, `app/rodar_sessoes_vcam.py` e `app/agg_sessoes_vcam.py`. **Ainda não executado.**
 
 ---
 

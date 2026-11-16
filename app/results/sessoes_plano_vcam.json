@@ -1,0 +1,182 @@
+[
+  {
+    "n": 1,
+    "id": "Queen_Latifah",
+    "fotoA": "data/lfw/lfw_home/lfw_funneled/Queen_Latifah/Queen_Latifah_0001.jpg",
+    "fotoB": "data/lfw/lfw_home/lfw_funneled/Queen_Latifah/Queen_Latifah_0002.jpg",
+    "ab_genuina": 0.6425,
+    "rostos_fotoA_fotoB": [
+      1,
+      1
+    ],
+    "origem": "plano original (semente 42)"
+  },
+  {
+    "n": 2,
+    "id": "Carlos_Moya",
+    "fotoA": "data/lfw/lfw_home/lfw_funneled/Carlos_Moya/Carlos_Moya_0001.jpg",
+    "fotoB": "data/lfw/lfw_home/lfw_funneled/Carlos_Moya/Carlos_Moya_0002.jpg",
+    "ab_genuina": 0.6339,
+    "rostos_fotoA_fotoB": [
+      1,
+      1
+    ],
+    "origem": "plano original (semente 42)"
+  },
+  {
+    "n": 3,
+    "id": "Alexandra_Vodjanikova",
+    "fotoA": "data/lfw/lfw_home/lfw_funneled/Alexandra_Vodjanikova/Alexandra_Vodjanikova_0001.jpg",
+    "fotoB": "data/lfw/lfw_home/lfw_funneled/Alexandra_Vodjanikova/Alexandra_Vodjanikova_0002.jpg",
+    "ab_genuina": 0.5444,
+    "rostos_fotoA_fotoB": [
+      1,
+      1
+    ],
+    "origem": "plano original (semente 42)"
+  },
+  {
+    "n": 4,
+    "id": "Steven_Seagal",
+    "fotoA": "data/lfw/lfw_home/lfw_funneled/Steven_Seagal/Steven_Seagal_0001.jpg",
+    "fotoB": "data/lfw/lfw_home/lfw_funneled/Steven_Seagal/Steven_Seagal_0002.jpg",
+    "ab_genuina": 0.7176,
+    "rostos_fotoA_fotoB": [
+      1,
+      1
+    ],
+    "origem": "plano original (semente 42)"
+  },
+  {
+    "n": 5,
+    "id": "Greg_Rusedski",
+    "fotoA": "data/lfw/lfw_home/lfw_funneled/Greg_Rusedski/Greg_Rusedski_0001.jpg",
+    "fotoB": "data/lfw/lfw_home/lfw_funneled/Greg_Rusedski/Greg_Rusedski_0002.jpg",
+    "ab_genuina": 0.5692,
+    "rostos_fotoA_fotoB": [
+      1,
+      1
+    ],
+    "origem": "plano original (semente 42)"
+  },
+  {
+    "n": 6,
+    "id": "GL_Peiris",
+    "fotoA": "data/lfw/lfw_home/lfw_funneled/GL_Peiris/GL_Peiris_0001.jpg",
+    "fotoB": "data/lfw/lfw_home/lfw_funneled/GL_Peiris/GL_Peiris_0002.jpg",
+    "ab_genuina": 0.743,
+    "rostos_fotoA_fotoB": [
+      1,
+      1
+    ],
+    "origem": "plano original (semente 42)"
+  },
+  {
+    "n": 7,
+    "id": "Ethan_Hawke",
+    "fotoA": "data/lfw/lfw_home/lfw_funneled/Ethan_Hawke/Ethan_Hawke_0001.jpg",
+    "fotoB": "data/lfw/lfw_home/lfw_funneled/Ethan_Hawke/Ethan_Hawke_0002.jpg",
+    "ab_genuina": 0.7888,
+    "rostos_fotoA_fotoB": [
+      1,
+      1
+    ],
+    "origem": "plano original (semente 42)"
+  },
+  {
+    "n": 8,
+    "id": "Christine_Gregoire",
+    "fotoA": "data/lfw/lfw_home/lfw_funneled/Christine_Gregoire/Christine_Gregoire_0001.jpg",
+    "fotoB": "data/lfw/lfw_home/lfw_funneled/Christine_Gregoire/Christine_Gregoire_0002.jpg",
+    "ab_genuina": 0.7572,
+    "rostos_fotoA_fotoB": [
+      1,
+      1
+    ],
+    "origem": "plano original (semente 42)"
+  },
+  {
+    "n": 9,
+    "id": "Stephen_Friedman",
+    "fotoA": "data/lfw/lfw_home/lfw_funneled/Stephen_Friedman/Stephen_Friedman_0001.jpg",
+    "fotoB": "data/lfw/lfw_home/lfw_funneled/Stephen_Friedman/Stephen_Friedman_0002.jpg",
+    "ab_genuina": 0.5542,
+    "rostos_fotoA_fotoB": [
+      1,
+      1
+    ],
+    "origem": "plano original (semente 42)"
+  },
+  {
+    "n": 10,
+    "id": "Bruce_Weber",
+    "fotoA": "data/lfw/lfw_home/lfw_funneled/Bruce_Weber/Bruce_Weber_0001.jpg",
+    "fotoB": "data/lfw/lfw_home/lfw_funneled/Bruce_Weber/Bruce_Weber_0002.jpg",
+    "ab_genuina": 0.7103,
+    "rostos_fotoA_fotoB": [
+      1,
+      1
+    ],
+    "origem": "plano original (semente 42)"
+  },
+  {
+    "n": 11,
+    "id": "Robert_Horan",
+    "fotoA": "data/lfw/lfw_home/lfw_funneled/Robert_Horan/Robert_Horan_0001.jpg",
+    "fotoB": "data/lfw/lfw_home/lfw_funneled/Robert_Horan/Robert_Horan_0002.jpg",
+    "ab_genuina": 0.7453,
+    "rostos_fotoA_fotoB": [
+      1,
+      1
+    ],
+    "origem": "plano original (semente 42)"
+  },
+  {
+    "n": 12,
+    "id": "Michelle_Kwan",
+    "fotoA": "data/lfw/lfw_home/lfw_funneled/Michelle_Kwan/Michelle_Kwan_0001.jpg",
+    "fotoB": "data/lfw/lfw_home/lfw_funneled/Michelle_Kwan/Michelle_Kwan_0002.jpg",
+    "ab_genuina": 0.5823,
+    "rostos_fotoA_fotoB": [
+      2,
+      4
+    ],
+    "origem": "plano original (semente 42)"
+  },
+  {
+    "n": 13,
+    "id": "Bob_Beauprez",
+    "fotoA": "data/lfw/lfw_home/lfw_funneled/Bob_Beauprez/Bob_Beauprez_0001.jpg",
+    "fotoB": "data/lfw/lfw_home/lfw_funneled/Bob_Beauprez/Bob_Beauprez_0002.jpg",
+    "ab_genuina": 0.7823,
+    "rostos_fotoA_fotoB": [
+      2,
+      1
+    ],
+    "origem": "plano original (semente 42)"
+  },
+  {
+    "n": 14,
+    "id": "Oleksandr_Moroz",
+    "fotoA": "data/lfw/lfw_home/lfw_funneled/Oleksandr_Moroz/Oleksandr_Moroz_0001.jpg",
+    "fotoB": "data/lfw/lfw_home/lfw_funneled/Oleksandr_Moroz/Oleksandr_Moroz_0002.jpg",
+    "ab_genuina": 0.7803,
+    "rostos_fotoA_fotoB": [
+      1,
+      2
+    ],
+    "origem": "plano original (semente 42)"
+  },
+  {
+    "n": 15,
+    "id": "Amanda_Beard",
+    "fotoA": "data/lfw/lfw_home/lfw_funneled/Amanda_Beard/Amanda_Beard_0001.jpg",
+    "fotoB": "data/lfw/lfw_home/lfw_funneled/Amanda_Beard/Amanda_Beard_0002.jpg",
+    "ab_genuina": 0.7431,
+    "rostos_fotoA_fotoB": [
+      1,
+      2
+    ],
+    "origem": "substituta (17ª extração do mesmo sorteio)"
+  }
+]

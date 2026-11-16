@@ -1,6 +1,8 @@
 # Avaliação de Vulnerabilidade de Verificação Facial a Deepfakes Injetados
 
-Red teaming de um sistema de **verificação facial** contra ataques de **deepfake por face swap injetado na câmera**, em três cenários — foto (LFW), vídeo (YTF) e tempo real (webcam) — unificados na mesma régua metodológica: alinhamento ArcFace de 5 pontos, **referência blindada** (separada da fonte do swap) e **limiar calibrado por FAR** (ponto de operação do sistema).
+Red teaming de um sistema de **verificação facial** contra ataques de **deepfake por face swap injetado no laço de captura**, em três cenários — foto (LFW), vídeo (YTF) e tempo real (webcam) — unificados na mesma régua metodológica: alinhamento ArcFace de 5 pontos, **referência blindada** (separada da fonte do swap) e **limiar calibrado por FAR** (ponto de operação do sistema).
+
+> **Cenário ao vivo:** nesta fase a injeção é *emulada* — o quadro manipulado é entregue diretamente à verificação, sem atravessar uma câmera virtual (ver `GUIA_DO_PROJETO.md` §7). O experimento que fecha essa lacuna está especificado em [`PROTOCOLO_VCAM.md`](PROTOCOLO_VCAM.md) e ainda não foi executado.
 
 > **Documentação completa** (mapa de arquivos, decisões, como rodar cada parte, resultados e limitações): **[`GUIA_DO_PROJETO.md`](GUIA_DO_PROJETO.md)**
 

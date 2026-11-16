@@ -24,3 +24,7 @@ PyYAML==6.0.3
 ultralytics==8.4.201
 onnxruntime-gpu==1.24.4
 facenet-pytorch==2.6.0
+
+# Injeção por câmera virtual (PROTOCOLO_VCAM.md): escreve os quadros em /dev/video10.
+# Requer o módulo de kernel v4l2loopback (fora do pip) e o utilitário v4l2-ctl (v4l-utils).
+pyvirtualcam==0.15.0
