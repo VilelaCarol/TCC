@@ -1,0 +1,69 @@
+==============================================================================================
+INJEÇÃO POR CÂMERA VIRTUAL — AGREGAÇÃO POR SESSÃO
+==============================================================================================
+limiares de operação (LFW jeito 2): FAR1% = 0.1562 | FAR0,1% = 0.2289
+regra principal: mediana dos quadros COM detecção | sensibilidade: sem detecção = rejeitado
+logs: 30 em '/home/carolis/Documentos/TCC/DeepFake-as-a-Spoofing-Attack/app/results/sessoes_vcam/*_B.csv'
+
+sessão                             únicos   dup   det%  mediana    sens    emul  aceita
+----------------------------------------------------------------------------------------------
+atq_01_Queen_Latifah                  322     0 100.0%    0.599   0.599   0.600     SIM
+atq_02_Carlos_Moya                    323     0 100.0%    0.516   0.516   0.519     SIM
+atq_03_Alexandra_Vodjanikova          322     0 100.0%    0.485   0.485   0.486     SIM
+atq_04_Steven_Seagal                  327     0 100.0%    0.603   0.603   0.603     SIM
+atq_05_Greg_Rusedski                  328     0 100.0%    0.379   0.379   0.374     SIM
+atq_06_GL_Peiris                      321     0 100.0%    0.632   0.632   0.630     SIM
+atq_07_Ethan_Hawke                    327     0 100.0%    0.637   0.637   0.636     SIM
+atq_08_Christine_Gregoire             322     0 100.0%    0.632   0.632   0.631     SIM
+atq_09_Stephen_Friedman               346     0 100.0%    0.422   0.422   0.422     SIM
+atq_10_Bruce_Weber                    346     0 100.0%    0.558   0.558   0.560     SIM
+atq_11_Robert_Horan                   347     0 100.0%    0.618   0.618   0.619     SIM
+atq_12_Michelle_Kwan                  345     0 100.0%    0.519   0.519   0.520     SIM
+atq_13_Bob_Beauprez                   344     0 100.0%    0.533   0.533   0.529     SIM
+atq_14_Oleksandr_Moroz                344     0 100.0%    0.610   0.610   0.611     SIM
+atq_15_Amanda_Beard                   345     0 100.0%    0.590   0.590   0.588     SIM
+imp_01_Queen_Latifah                  452     0 100.0%    0.006   0.006   0.006     não
+imp_02_Carlos_Moya                    452     0 100.0%   -0.102  -0.102  -0.102     não
+imp_03_Alexandra_Vodjanikova          453     0 100.0%   -0.037  -0.037  -0.036     não
+imp_04_Steven_Seagal                  453     0 100.0%   -0.040  -0.040  -0.040     não
+imp_05_Greg_Rusedski                  453     0 100.0%    0.076   0.076   0.075     não
+imp_06_GL_Peiris                      453     0 100.0%   -0.003  -0.003  -0.003     não
+imp_07_Ethan_Hawke                    453     0 100.0%   -0.096  -0.096  -0.096     não
+imp_08_Christine_Gregoire             453     0 100.0%   -0.025  -0.025  -0.023     não
+imp_09_Stephen_Friedman               453     0 100.0%    0.050   0.050   0.049     não
+imp_10_Bruce_Weber                    453     0 100.0%    0.031   0.031   0.032     não
+imp_11_Robert_Horan                   453     0 100.0%    0.007   0.007   0.007     não
+imp_12_Michelle_Kwan                  455     0 100.0%    0.056   0.056   0.055     não
+imp_13_Bob_Beauprez                   453     0 100.0%   -0.012  -0.012  -0.011     não
+imp_14_Oleksandr_Moroz                453     0 100.0%    0.034   0.034   0.034     não
+imp_15_Amanda_Beard                   452     0 100.0%   -0.105  -0.105  -0.105     não
+
+==============================================================================================
+ATAQUE — unidade = sessão (n = 15)
+==============================================================================================
+  principal     @FAR1%  : 15/15 = 100.0%  (IC95% Wilson: 79.6–100.0)
+  sensibilidade @FAR1%  : 15/15 = 100.0%  (IC95% Wilson: 79.6–100.0)
+  principal     @FAR0,1%: 15/15 = 100.0%
+  taxa de detecção por sessão: mín 100.0% | mediana 100.0% | máx 100.0%
+  quadros duplicados descartados: 0 de 5009 lidos
+  As duas regras concordam.
+
+  comparação pareada emulado x canal (n = 15 sessões)
+    mediana emulada: 0.588 | mediana pelo canal: 0.590
+    diferença (emulado - canal): mediana -0.000 | mín -0.005 | máx +0.003
+    Wilcoxon pareado bilateral (análise secundária): W = 54.0 | p = 0.762
+
+==============================================================================================
+CONTROLE IMPOSTOR — unidade = sessão (n = 15)
+==============================================================================================
+  principal     @FAR1%  : 0/15 = 0.0%  (IC95% Wilson: 0.0–20.4)
+  sensibilidade @FAR1%  : 0/15 = 0.0%  (IC95% Wilson: 0.0–20.4)
+  principal     @FAR0,1%: 0/15 = 0.0%
+  taxa de detecção por sessão: mín 100.0% | mediana 100.0% | máx 100.0%
+  quadros duplicados descartados: 0 de 6794 lidos
+  As duas regras concordam.
+
+  comparação pareada emulado x canal (n = 15 sessões)
+    mediana emulada: -0.003 | mediana pelo canal: -0.003
+    diferença (emulado - canal): mediana -0.000 | mín -0.001 | máx +0.001
+    Wilcoxon pareado bilateral (análise secundária): W = 58.0 | p = 0.934
