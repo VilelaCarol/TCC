@@ -1,12 +1,12 @@
 # Guia do Projeto — Red-team de Verificação Facial contra Deepfake
 
-> Documento de referência para retomar o projeto. **Verificado contra o estado real do repositório em 15/11/2026** (imports conferidos por `grep`, versões lidas do `.venv`, números lidos dos arquivos em `app/results/`). Onde algo é incerto, está marcado como **(incerto)**.
+> Documento de referência para retomar o projeto. **Verificado contra o estado real do repositório em 15/11/2026** (imports conferidos por `grep`, versões lidas do `.venv`, números lidos dos arquivos em `app/results/`); **experimento por câmera virtual acrescentado e conferido em 16/11/2026** (números de `vcam_resultados.txt`, `vcam_sessoes.csv`, `validade_vcam.txt`). Onde algo é incerto, está marcado como **(incerto)**.
 
 ---
 
 ## 1. Visão geral
 
-O projeto é um **red teaming** (avaliação de vulnerabilidade) de um sistema de **verificação facial** contra ataques de **deepfake por face swap injetado no laço de captura** (injeção emulada; ver §7 e `PROTOCOLO_VCAM.md`).
+O projeto é um **red teaming** (avaliação de vulnerabilidade) de um sistema de **verificação facial** contra ataques de **deepfake por face swap injetado no laço de captura** (duas condições ao vivo: **emulada** no laço e por **câmera virtual** v4l2loopback — esta **executada**; ver §8.7, §7 e `PROTOCOLO_VCAM.md`).
 
 - **Sistema-vítima:** `YOLOv8-Face` (detecção + 5 landmarks) → `AdaFace IR-50` (embedding facial de 512 dimensões, treinado no WebFace4M) → **similaridade cosseno** vs. um limiar.
 - **Ataque:** `FaceFusion / inswapper_128` troca o rosto da vítima no quadro do atacante (deepfake).
@@ -18,7 +18,8 @@ Três cenários, hoje unificados na mesma metodologia:
 |---|---|---|
 | **LFW** | foto × foto (benchmark acadêmico) | `app/reverify_lfw_jeito12.py` |
 | **YTF** | vídeo × vídeo (YouTube Faces, protocolo de média de frames) | `app/reverify_ytf_jeito12.py` |
-| **Real-time** | webcam ao vivo, ASR medido dentro do loop | `app/realtime_live_attack.py` |
+| **Real-time** (emulada) | webcam ao vivo, ASR medido dentro do loop | `app/realtime_live_attack.py` |
+| **Real-time** (câmera virtual) | webcam → FaceFusion → `/dev/video10`, lido por processo independente (YOLOv8-Face+AdaFace) | `app/rodar_sessoes_vcam.py` (ver §8.7) |
 
 ---
 
@@ -111,6 +112,17 @@ Fornecem geração de pares reprodutível (seed=42) e funções legadas. Também
 
 **Limpeza adicional (após `292ed0c`, análise de dependências):** removidos também os restos do pipeline Docker/notebook, sem referência ativa — `pipeline_lfw_adaface.ipynb`, `pipeline_deepfake.ipynb`, `update_notebooks.py`, `test_ff.py`, `Dockerfile`, `docker-compose.gpu.yml`, `docker-compose.cpu.yml`, `passo_a_passo_projeto.txt` (continha os números ANTIGOS 92.8%/34.3%, substituídos pelos blindados/calibrados) e 7 scripts órfãos de `app/utils/` (`benchmark_fps`, `compare_faces`, `generate_paper_plots`, `swap_faces`, `run_experiment`, `run_swaps_experiment`, `test_gpu`). Em `app/utils/` ficaram só `download_lfw.py` (obtenção do LFW) e `visualize_alignment.py` (figura dos 5 landmarks). O `requirements.txt` foi curado para os imports reais (saíram `transformers`, `fastapi`, `uvicorn`, `gdown`; `numpy<2.0` corrigido p/ 2.2.1).
 
+### 3.5. EXPERIMENTO POR CÂMERA VIRTUAL (v4l2loopback) — ver §8.7
+Registro prévio e scripts da injeção por câmera virtual (dois processos independentes):
+- **`PROTOCOLO_VCAM.md`** — registro prévio do protocolo (commit `f45f69a`, ANTES da coleta); **não editar depois da coleta** (seria adulteração).
+- **`setup_vcam.sh`** — carrega o módulo `v4l2loopback` e cria `/dev/video10` (câmera virtual de saída do atacante). Substitui o antigo `setup_realtime.sh` (OBS), movido para `legado/`.
+- **`app/gerar_plano_vcam.py`** — gera `app/results/sessoes_plano_vcam.json` + `validade_vcam.txt`: aplica o critério A-B ≥ 0,40 e **continua** o sorteio da semente 42 para a substituta.
+- **`app/vcam_atacante.py`** (Processo A) — webcam → FaceFusion inswapper_128 → `/dev/video10`; mede a similaridade **emulada** no laço (log `*_A.csv`). Flags `--preview` e `--ocultar-similaridade`.
+- **`app/vcam_verificador.py`** (Processo B) — lê `/dev/video10` com o próprio **YOLOv8-Face + AdaFace**; log `*_B.csv` (**resultado oficial**); colunas `detectado`, `n_rostos`, `duplicado` (regras §3.3/§3.4 do protocolo).
+- **`app/rodar_sessoes_vcam.py`** — executor: sobe A e B por sessão; passa `--preview` e `--ocultar-similaridade` por padrão.
+- **`app/agg_sessoes_vcam.py`** — agrega por sessão (mediana ≥ limiar; Wilson; sensibilidade; pareado emulado×canal com Wilcoxon) → `vcam_resultados.txt`, `vcam_sessoes.csv`.
+- **`app/results/sessoes_vcam/`** — logs: **oficiais na raiz** (`atq_*`, `imp_*`), **testes em `testes/`** (fora da análise).
+
 ---
 
 ## 4. Como rodar (comandos exatos)
@@ -124,7 +136,11 @@ Sempre a partir da raiz do repositório. O `.venv` já tem tudo; use `.venv/bin/
 | `N_BASE_EACH=500 N_ATTACK=300 .venv/bin/python app/ablation_ytf.py` | `ablation_ytf.txt`, `ablation_spotcheck/` | ~8 min (reusa swaps, sem FaceFusion) | ~0.5 GB |
 | `.venv/bin/python app/blindar_refs.py` | `blindado_lfw_ytf.txt`, `lfw_attack_blindado_scores.csv`, `ytf_attack_blindado_scores.csv` | ~5–8 min | ~0.5 GB |
 | `.venv/bin/python app/figura_distribuicoes.py` | `distribuicoes_blindado.png` | ~seg | — (só CPU, lê os CSVs) |
-| `.venv/bin/python app/figuras_monografia.py` | `fig1_roc.png`, `fig2_asr.png`, `fig3_tempo_real.png` | ~seg | — (só CPU, lê os CSVs) |
+| `.venv/bin/python app/figuras_monografia.py` | `fig1_roc.png`, `fig2_asr.png`, `fig3_tempo_real.png` (fig3 = câmera virtual c/ emulada sobreposta) | ~seg | — (só CPU, lê os CSVs) |
+| `bash setup_vcam.sh` | `/dev/video10` (v4l2loopback) | ~seg (precisa de `sudo`) | — |
+| `.venv/bin/python app/gerar_plano_vcam.py` | `sessoes_plano_vcam.json`, `validade_vcam.txt` | ~1–3 min | ~2.7 GB |
+| `.venv/bin/python app/rodar_sessoes_vcam.py --modo ATAQUE\|PASSTHROUGH --prefixo atq\|imp --duration 30 --source 0` | `app/results/sessoes_vcam/{atq,imp}_*_{A,B}.csv` | ~30 s/sessão | ~3.0 GB (ataque) / ~0.8 GB (controle) |
+| `.venv/bin/python app/agg_sessoes_vcam.py` | `vcam_resultados.txt`, `vcam_sessoes.csv` | ~seg | — (só CPU) |
 
 **Pré-requisito do YTF:** `data/YouTubeFaces/frame_images_DB/<Pessoa>/<vídeo>/<frame>.jpg` extraído (o `frame_images_DB.tar.gz` ~11.9 GB, frames CRUS — **não** o `aligned_images_DB`). Os scripts YTF **não** baixam isso sozinhos.
 
@@ -171,6 +187,9 @@ Todos em `app/results/`. **Distinção crucial:**
 - `sessoes/atq_*.csv` (ataque) e `sessoes/imp_*.csv` (controle impostor) — log por frame de cada sessão.
 - `controle_intraclasse.txt` — similaridade genuína A-B de cada vítima + nº de rostos por foto (diagnóstico de validade das sessões).
 - `controles_realtime.txt` — agregado dos controles impostor (0/15 aceitas).
+- `sessoes_plano_vcam.json`, `validade_vcam.txt` — plano e log de validade do experimento por câmera virtual (§8.7): Steve_Waugh invalidado (A-B 0,100), substituto Amanda_Beard (17ª extração, 0,743).
+- `sessoes_vcam/atq_*`, `sessoes_vcam/imp_*` (oficiais) + `sessoes_vcam/testes/` (testes) — log por quadro de A (emulado) e B (canal) da injeção por câmera virtual.
+- `vcam_resultados.txt`, `vcam_sessoes.csv` — agregação do experimento por câmera virtual (ASR/sessão, Wilson, sensibilidade, pareado emulado×canal).
 
 ### Arquivos ANTIGOS — REMOVIDOS nesta versão limpa
 Os resultados do pipeline original (Jeito 1 / offline) foram **removidos** para não confundir: `lfw_scores.csv`, `ytf_scores.csv`, `lfw_swap_attack_results.csv`, `ytf_swap_attack_results.csv`, `realtime_asr_offline.csv`, `realtime_asr_summary.txt`, `realtime_attack_log.csv`, `*_conclusion.txt`, `experimental_config.txt`, plots antigos e as pastas `pose_analysis/`, `paper_plots/`, `realtime_frames/`. Ainda estão no repositório original e no histórico Git, se precisar.
@@ -180,7 +199,8 @@ Os resultados do pipeline original (Jeito 1 / offline) foram **removidos** para 
 |---|---|---|---|
 | **LFW** | 94.9% | **91.8%** | 91.3% |
 | **YTF** | 98.1% | **87.7%** | 84.3% |
-| **Real-time** | — | **100%** (14/14 sessões válidas) @ limiar herdado do LFW | 100% |
+| **Real-time** (emulada) | — | **100%** (14/14 sessões válidas) @ limiar herdado do LFW | 100% |
+| **Real-time** (câmera virtual) | — | **100%** (15/15) @ limiar LFW; controle 0/15; detecção 100% | 100% |
 
 Leitura do real-time (protocolo multi-sessão EXECUTADO — ver §8.6): a unidade estatística é a **sessão**, não o frame (frames são autocorrelacionados, ρ=0.866, n_eff≈26). Rodamos **15 sessões** contra 15 identidades do LFW sorteadas com semente fixa (42, congeladas em `sessoes_plano.json`). Regra de decisão fixada **antes** da coleta: sessão aceita se a **mediana** das similaridades ≥ limiar de operação herdado do LFW (0.1562 @FAR1%, 0.2289 @FAR0.1%).
 - **Ataque:** 14/15 = **93.3%** (IC95% Wilson 70.2–98.8) bruto. A única "falha" (Steve_Waugh) é **inválida**: a foto de referência tem 2 rostos e a detecção pegou a pessoa errada (similaridade genuína A-B = 0.10), comprovado por `controle_intraclasse.py`. Excluindo-a: **14/14 = 100%** (IC95% Wilson 78.5–100).
@@ -210,7 +230,7 @@ Tudo em `app/realtime_live_attack.py`, função `run()`, salvo indicação.
 - **Ambiente antigo perdido:** datasets e swaps foram regenerados numa única pilha consistente → os números offline antigos **não são diretamente comparáveis** (motivo da unificação).
 - **Real-time = protocolo multi-sessão** (15 sessões, unidade = sessão, IC de Wilson; ver §8.6). Responde à crítica do ASR offline e já tem IC. Amostra ainda modesta (n=15) → ampliar para IC mais estreito.
 - **Detecção multi-face:** pega-se a face de maior confiança. Isso **corrompeu 1 referência** no protocolo multi-sessão (Steve_Waugh: `fotoB` com 2 rostos → referência de outra pessoa, A-B=0.10), **detectada e excluída com justificativa** por `controle_intraclasse.py`. Nas 14 válidas as referências têm A-B 0.54–0.79. Fotos com >1 rosto exigem seleção da face correta.
-- **Injeção por câmera virtual:** o cenário ao vivo atual é uma injeção **emulada** — o quadro manipulado vai direto para a verificação, sem passar por um dispositivo v4l2loopback, e o alinhamento reaproveita os pontos fiduciais do detector do FaceFusion, de modo que o YOLOv8-Face do sistema-alvo não vê o deepfake. O protocolo que remove as duas limitações está em `PROTOCOLO_VCAM.md`, com os scripts `app/vcam_atacante.py`, `app/vcam_verificador.py`, `app/rodar_sessoes_vcam.py` e `app/agg_sessoes_vcam.py`. **Ainda não executado.**
+- **Injeção por câmera virtual — EXECUTADA (ver §8.7).** O cenário ao vivo tem duas condições: a **emulada** no laço (quadro manipulado entregue direto à verificação, alinhamento reaproveitando os pontos do FaceFusion) e a **por câmera virtual (v4l2loopback)**, em que um processo **independente** do sistema-alvo lê `/dev/video10` com o próprio **YOLOv8-Face** — o alvo **vê o deepfake** e o quadro **atravessa o canal**. Resultado: **15/15 ataques, 0/15 controle, detecção 100%**, e a medida pelo canal é indistinguível da emulada (diferença ≤ 0,005/sessão, Wilcoxon p=0,76). **Limitação remanescente:** o canal é **local** (v4l2loopback), **sem a recompressão de vídeo com perdas** que um Zoom/Meet/WhatsApp aplicaria; a robustez do ataque sob compressão de canal fica em aberto.
 
 ---
 
@@ -247,6 +267,7 @@ O inswapper condiciona o swap num embedding ArcFace e o AdaFace tem espaço de i
 ### 8.5. Correções factuais aplicadas (pós-revisão)
 - **Checkpoint:** o modelo final é **AdaFace IR-50 WebFace4M** (`data/models/adaface_ir50_webface4m.ckpt`, local). Textos antigos diziam "CVLFace/MS1MV2 via HuggingFace" — **errado**, corrigido no README e nos prints de `baseline_lfw.py`/`baseline_ytf.py`.
 - **Real-time:** o número oficial é o **protocolo multi-sessão** (15 sessões LFW, semente 42; `agg_sessoes_realtime.py` + `analise_controles_realtime.py`), no limiar **herdado do LFW** (não o 0.698 overfit) — ver §8.6. A sessão única antiga (`realtime_asr_oficial.py`, 357 quadros do conjunto pessoal) foi movida para `legado/`.
+- **`setup_realtime.sh` → `legado/`:** o setup do pipeline antigo (câmera virtual via **OBS**, pedia `video_nr=0,2`) não é referenciado por nenhum script ativo (só um comentário histórico em `setup_vcam.sh`); movido para `legado/` com `git mv`. O experimento por câmera virtual usa `setup_vcam.sh` + v4l2loopback direto (§3.5, §8.7).
 
 ### 8.6. Protocolo multi-sessão do real-time (#3) — EXECUTADO
 Como os frames são autocorrelacionados (n_eff≈26), a unidade estatística é a **sessão**.
@@ -275,6 +296,29 @@ Como os frames são autocorrelacionados (n_eff≈26), a unidade estatística é 
 - **Intraclasse:** vítimas válidas com A-B genuína 0.54–0.79; o deepfake recupera **66–92%** dela. As duas mais fracas (Greg_Rusedski 0.377, Stephen_Friedman 0.399) são **transferência parcial estável** (std ~0.02; foto-fonte não-frontal), ainda **acima** do ponto de operação.
 
 Scripts: `rodar_sessoes.py` (executor), `agg_sessoes_realtime.py` (ASR/Wilson), `analise_controles_realtime.py` (impostor), `controle_intraclasse.py` (validade). Flag `--log` do `realtime_live_attack.py`.
+
+### 8.7. Experimento por câmera virtual (v4l2loopback) — EXECUTADO
+Fecha as duas limitações da condição emulada (o alvo não via o deepfake; o fluxo não atravessava um dispositivo de câmera). Protocolo **pré-registrado** em `PROTOCOLO_VCAM.md` (commit `f45f69a`, antes de qualquer gravação; o horário do commit é a evidência de que as regras foram fixadas sem conhecer os resultados).
+
+**a) Arquitetura (dois processos independentes).**
+- **Processo A (atacante, `app/vcam_atacante.py`):** webcam `/dev/video0` → FaceFusion inswapper_128 → escreve o quadro manipulado em `/dev/video10` (v4l2loopback). Mede, no laço, a similaridade contra a referência blindada (medida **emulada**, log `*_A.csv`).
+- **Processo B (sistema-alvo, `app/vcam_verificador.py`):** lê `/dev/video10` como leria uma webcam, roda o pipeline completo (**YOLOv8-Face** detecta e alinha → **AdaFace** → cosseno), sem saber do atacante. Log `*_B.csv` = **resultado oficial** (medida **pelo canal**). As duas medidas, por sessão, formam a comparação pareada que mede o efeito conjunto do canal e da troca de detector (FaceFusion → YOLOv8-Face).
+
+**b) Plano (semente 42 continuada; §3.1 do protocolo).** Reusa o `sessoes_plano.json`, mas aplica o critério de validade (similaridade genuína fotoA×fotoB ≥ 0,40) **antes** da coleta. `Steve_Waugh` é invalidado (A-B = **0,100**); a substituta sai **continuando** o mesmo sorteio: 16ª extração `Kamal_Kharrazi` **reprovada** (A-B = **−0,023**), 17ª `Amanda_Beard` **aceita** (A-B = **0,743**). Conjunto final: 15 identidades válidas (`sessoes_plano_vcam.json`, `validade_vcam.txt`).
+
+**c) Resultados (15 ataque + 15 controle; `vcam_resultados.txt`, `vcam_sessoes.csv`).** Unidade = sessão; aceita se a mediana dos quadros detectados ≥ limiar LFW (FAR1% = 0,1562).
+- **Ataque:** **15/15 = 100%** (IC95% Wilson **79,6–100**); @FAR0,1% também 15/15. Medianas por sessão (canal) **0,379–0,637** (a menor, `atq_05 Greg_Rusedski` = 0,379, acima do limiar).
+- **Controle impostor (PASSTHROUGH):** **0/15 = 0%** (IC95% Wilson **0–20,4**). Medianas **−0,105 a 0,076**, todas abaixo do limiar.
+- **Detecção:** **100%** nas 30 sessões; **0 quadros duplicados**; **11.803 quadros** com exatamente 1 rosto.
+- **Separação ataque × controle:** Cohen's **d = 8,19**; Mann-Whitney exato **unilateral U = 225, p = 6,4e-9** (separação completa — mesma convenção unilateral da condição emulada; o Wilcoxon do pareado é bilateral porque ali não há direção esperada).
+- **Regra de sensibilidade (§3.3, sem detecção = rejeitado):** idêntica à principal, pois a detecção foi 100%.
+- **Emulado × canal (§3.7, pareado, descritivo):** mediana emulado 0,588 vs canal 0,590; diferença **≤ 0,005 por sessão**; Wilcoxon pareado bilateral **p = 0,76** → a medida pelo canal fica **sem diferença detectável** em relação à emulada (no máximo 0,005 por sessão). As duas limitações declaradas **não alteraram o resultado**.
+
+**d) Desvios e ocorrências (transparência).**
+- Rodei os **blocos de teste completos** (15 de cada) em vez de uma sessão: `teste_imp` **com a similaridade visível no console** (antes do `dfd2baa`) e `teste_atq` já com o console oculto. São testes (§4/§5 do protocolo), movidos para `sessoes_vcam/testes/` e **fora da análise**.
+- Commit **`dfd2baa`** (`--ocultar-similaridade`) feito **depois** do registro prévio e **antes** da coleta oficial: oculta a similaridade no **console** de A e B; **nenhuma regra alterada** e **nenhuma coluna do CSV muda** (cumpre o §3.5).
+- `pyvirtualcam` instalado com **`uv pip`** (o `.venv` é `uv`, sem `pip`); versão fixada no `requirements.txt`.
+- **Nenhuma sessão regravada**; nenhuma falha técnica (§3.8) nas 30 oficiais.
 
 ---
 
