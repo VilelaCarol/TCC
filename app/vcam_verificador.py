@@ -61,6 +61,9 @@ def parse_args():
     p.add_argument("--espera", type=float, default=20.0, help="segundos aguardando o 1º quadro")
     p.add_argument("--timeout", type=float, default=4.0, help="encerra após N s sem quadro novo")
     p.add_argument("--log", required=True)
+    p.add_argument("--ocultar-similaridade", action="store_true",
+                   help="não imprime a similaridade nem o nº de aceitos no console (§3.5). "
+                        "Afeta só o print; o CSV continua gravando similarity/aceita_far1 igual.")
     return p.parse_args()
 
 
@@ -181,8 +184,11 @@ def main():
 
             if n_unicos % 30 == 0:
                 taxa = 100.0 * n_det / n_unicos
-                print(f"[B] {elapsed:5.1f}s únicos={n_unicos} fps={fps_val:4.1f} "
-                      f"detecção={taxa:5.1f}% sim={sim_txt or '--'}")
+                msg = (f"[B] {elapsed:5.1f}s únicos={n_unicos} fps={fps_val:4.1f} "
+                       f"detecção={taxa:5.1f}%")
+                if not a.ocultar_similaridade:
+                    msg += f" sim={sim_txt or '--'}"
+                print(msg)
 
             if a.max_frames and n_unicos >= a.max_frames:
                 break
@@ -194,8 +200,11 @@ def main():
         cap.release()
         fh.close()
         det = 100.0 * n_det / n_unicos if n_unicos else 0.0
-        print(f"[B] fim | lidos={n} únicos={n_unicos} detectados={n_det} ({det:.1f}%) "
-              f"| aceitos@FAR1%={n_aceitos} | log={log_path}")
+        msg = f"[B] fim | lidos={n} únicos={n_unicos} detectados={n_det} ({det:.1f}%)"
+        if not a.ocultar_similaridade:
+            msg += f" | aceitos@FAR1%={n_aceitos}"
+        msg += f" | log={log_path}"
+        print(msg)
 
 
 if __name__ == "__main__":

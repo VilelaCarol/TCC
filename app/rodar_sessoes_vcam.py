@@ -53,6 +53,10 @@ def parse_args():
                    help="mostra no atacante a janela com o quadro enviado à câmera virtual (padrão: ligado)")
     p.add_argument("--sem-preview", dest="preview", action="store_false",
                    help="desliga a janela de preview do atacante")
+    p.add_argument("--ocultar-similaridade", dest="ocultar_sim", action="store_true", default=True,
+                   help="oculta a similaridade no console de A e B durante a coleta (padrão: ligado; §3.5)")
+    p.add_argument("--mostrar-similaridade", dest="ocultar_sim", action="store_false",
+                   help="mostra a similaridade no console (só p/ depuração; não usar na coleta)")
     p.add_argument("--dry-run", action="store_true")
     return p.parse_args()
 
@@ -95,6 +99,9 @@ def main():
             cmd_a.append("--preview")      # a atacante se vê enquanto grava (PROTOCOLO_VCAM.md, 3.5)
         cmd_b = [sys.executable, VERIFICADOR, "--device", a.vcam, "--ref-image", fotoB,
                  "--modo", a.modo, "--duration", str(a.duration), "--log", log_b]
+        if a.ocultar_sim:                       # §3.5: a atacante não vê similaridade no console
+            cmd_a.append("--ocultar-similaridade")
+            cmd_b.append("--ocultar-similaridade")
 
         print("\n" + "-" * 72)
         print(f">> PRÓXIMA SESSÃO [{n:02d}/{len(plano)}]  identidade: {idn}  modo: {a.modo}")

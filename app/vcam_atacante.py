@@ -67,6 +67,9 @@ def parse_args():
                    help="mostra numa janela OpenCV o quadro ENVIADO à câmera virtual "
                         "(deepfake no ATAQUE, rosto cru no PASSTHROUGH); sem similaridade, "
                         "sem veredito, sem número de resultado. Não altera o quadro enviado.")
+    p.add_argument("--ocultar-similaridade", action="store_true",
+                   help="não imprime a similaridade no console (cumpre o §3.5). "
+                        "Afeta só o print; o CSV continua gravando similarity_emulado igual.")
     return p.parse_args()
 
 
@@ -197,8 +200,10 @@ def main():
 
                 if n % 30 == 0:
                     taxa = 100.0 * n_swap_ok / n if a.modo == "ATAQUE" else 100.0
-                    print(f"[A] {elapsed:5.1f}s frames={n} fps={fps_val:4.1f} "
-                          f"swap_ok={taxa:5.1f}% sim={sim_txt or '--'}")
+                    msg = f"[A] {elapsed:5.1f}s frames={n} fps={fps_val:4.1f} swap_ok={taxa:5.1f}%"
+                    if not a.ocultar_similaridade:
+                        msg += f" sim={sim_txt or '--'}"
+                    print(msg)
 
                 if a.max_frames and n >= a.max_frames:
                     break
