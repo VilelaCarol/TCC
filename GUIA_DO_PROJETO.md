@@ -29,6 +29,7 @@ Três cenários, hoje unificados na mesma metodologia:
 A máquina antiga (RTX A5500, 24 GB) e duas pastas (`yolo8face_adaface/`, `facefusion/`) foram perdidas. O ambiente foi reconstruído do zero, **confirmado no `.venv`**:
 - Python **3.11.16**, `torch 2.6.0+cu124`, `torchvision 0.21.0+cu124` (CUDA 12.4, cuDNN 9.1.0), `onnxruntime-gpu 1.24.4`.
 - **FaceFusion fixado na tag 3.6.1** (clonado em `facefusion/`; a API muda em 3.7+).
+- Câmera virtual: módulo de kernel **v4l2loopback 0.15.3** (`dkms`) + `v4l-utils` — cria `/dev/video10` (§3.5, §8.7).
 - Wrapper `yolo8face_adaface/` reconstruído do zero (backbone AdaFace oficial + YOLOv8-Face), sem depender de HuggingFace/transformers.
 - `onnxruntime.preload_dlls()` no import acha as libs CUDA/cuDNN do torch; `pre_check()` baixa os modelos do FaceFusion.
 

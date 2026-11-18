@@ -26,5 +26,6 @@ onnxruntime-gpu==1.24.4
 facenet-pytorch==2.6.0
 
 # Injeção por câmera virtual (PROTOCOLO_VCAM.md): escreve os quadros em /dev/video10.
-# Requer o módulo de kernel v4l2loopback (fora do pip) e o utilitário v4l2-ctl (v4l-utils).
+# Requer o módulo de kernel v4l2loopback (fora do pip) e o utilitário v4l2-ctl (v4l-utils);
+# versão testada do módulo registrada no GUIA_DO_PROJETO.md §2.1.
 pyvirtualcam==0.15.0
